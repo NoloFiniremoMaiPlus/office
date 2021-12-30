@@ -1,0 +1,530 @@
+/*
+File: styles.css 
+Inspired from: https://getbootstrap.com/docs/5.0/examples/sign-in/signin.css
+Author: Fabio Vitali
+Version: 1.0 
+Last change on: 25 February 2021
+
+
+Copyright (c) 2021 by Fabio Vitali
+
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+   SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+   OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
+/* Font */
+@import url("https://fonts.googleapis.com/css?family=Quicksand:400,700");
+
+/* Design */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  color: #272727;
+  font-family: "Roboto", sans-serif;
+  scroll-behavior: smooth;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+  height: 100%;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+:root {
+  --main-font-color: #ffa500;
+  --main-white: rgb(255, 255, 255);
+  --main-font-dark-gray: #4d4d4d;
+  --main-footer-bg-color: #141414;
+  --main-font-family: "Dancing Script", cursive;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+/* Header - Main Text */
+
+.main-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 85vh;
+  text-align: center;
+}
+
+.main-text {
+  margin: auto;
+  line-height: 0;
+  width: min-content;
+  color: var(--main-font-dark-gray);
+  user-select: none;
+}
+
+.main-text h1 {
+  font-family: var(--main-font-family);
+  color: var(--main-font-color);
+  font-size: 5rem;
+  font-weight: 100;
+}
+
+.main-text h2 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-right: -5px;
+  font-size: 1.5rem;
+  line-height: 1;
+  position: relative;
+}
+
+.main-text h2::before,
+.main-text h2::after {
+  content: "";
+  width: 1.5rem;
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  background-color: var(--main-font-dark-gray);
+  border-radius: 8px;
+}
+
+.main-text h2::before {
+  left: 1rem;
+}
+
+.main-text h2::after {
+  right: 1rem;
+}
+
+img {
+  height: 10rem;
+  max-width: 10rem;
+  vertical-align: middle;
+}
+
+.btnCard {
+  color: #ffffff;
+  padding: 0.8rem;
+  font-size: 14px;
+  border-radius: 4px;
+  font-weight: 400;
+  display: inline;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  float: right;
+  background: transparent;
+}
+
+.btnCard:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cards_item {
+  display: flex;
+  padding: 1rem;
+}
+
+#singleCard {
+  background: linear-gradient(to bottom left, #ef8d9c 40%, #ffc39e 100%);
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card_content {
+  padding: 1rem;
+}
+
+.card_title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+  margin: 0px;
+}
+
+.card_image {
+  padding: 1rem;
+}
+
+.card_text {
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+
+.ulCard {
+  list-style-type: disc;
+  text-transform: capitalize;
+}
+
+.made_by {
+  font-weight: 400;
+  font-size: 13px;
+  margin-top: 35px;
+  text-align: center;
+}
+
+#sfondo {
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  background-image: url("/media/sfondo.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#navbar-backoffice {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+#content {
+  background-color: rgba(255, 255, 255, 0.7);
+  position: relative;
+  margin: 1rem auto;
+  padding: 1rem;
+  width: 95vw;
+  height: 89vh;
+  border-radius: 1rem;
+}
+
+#buttons {
+  height: 20%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  border-bottom: 1px solid var(--main-font-dark-gray);
+}
+
+#addUserBtn,
+#addEmployeeBtn,
+#addObjBtn {
+  width: 8rem;
+  height: 4rem;
+}
+
+.carousel-nav-icon {
+  height: 48px;
+  width: 48px;
+}
+.carousel-item .col,
+.carousel-item .col-sm,
+.carousel-item .col-md {
+  margin: 8px;
+  height: 300px;
+  background-size: cover;
+  background-position: center center;
+}
+
+.indicator {
+  background-color: transparent;
+  border: none;
+}
+
+#amountMin,
+#amountMax {
+  display: inline;
+  width: 25%;
+}
+
+#slider-range {
+  width: 100%;
+}
+
+#search,
+#searchEmployeeDiv,
+#searchRentDiv,
+#filtri {
+  padding: 1rem;
+  position: relative;
+  width: 50%;
+}
+
+#rightButton {
+  padding: 1rem;
+  position: relative;
+  width: 25%;
+}
+
+#searchBtn,
+#searchEmployeeBtn,
+#searchBtnRent {
+  float: right;
+}
+
+.text-secondary-d1 {
+  color: #728299 !important;
+}
+.page-header {
+  margin: 0 0 1rem;
+  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  border-bottom: 1px dotted #e2e2e2;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.cards_item {
+  display: flex;
+  justify-content: center;
+}
+
+.page-title {
+  padding: 0;
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 300;
+}
+.brc-default-l1 {
+  border-color: #dce9f0 !important;
+}
+
+.ml-n1,
+.mx-n1 {
+  margin-left: -0.25rem !important;
+}
+.mr-n1,
+.mx-n1 {
+  margin-right: -0.25rem !important;
+}
+.mb-4,
+.my-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.text-grey-m2 {
+  color: #888a8d !important;
+}
+
+.text-success-m2 {
+  color: #86bd68 !important;
+}
+
+.font-bolder,
+.text-600 {
+  font-weight: 600 !important;
+}
+
+.text-110 {
+  font-size: 110% !important;
+}
+.text-blue {
+  color: #478fcc !important;
+}
+.pb-25,
+.py-25 {
+  padding-bottom: 0.75rem !important;
+}
+
+.pt-25,
+.py-25 {
+  padding-top: 0.75rem !important;
+}
+.bgc-default-tp1 {
+  background-color: rgba(121, 169, 197, 0.92) !important;
+}
+.bgc-default-l4,
+.bgc-h-default-l4:hover {
+  background-color: #f3f8fa !important;
+}
+.page-header .page-tools {
+  -ms-flex-item-align: end;
+  align-self: flex-end;
+}
+
+.btn-light {
+  color: #757984;
+  background-color: #f5f6f9;
+  border-color: #dddfe4;
+}
+.w-2 {
+  width: 1rem;
+}
+
+.text-120 {
+  font-size: 120% !important;
+}
+.text-primary-m1 {
+  color: #4087d4 !important;
+}
+
+.text-danger-m1 {
+  color: #dd4949 !important;
+}
+.text-blue-m2 {
+  color: #68a3d5 !important;
+}
+.text-150 {
+  font-size: 150% !important;
+}
+.text-60 {
+  font-size: 60% !important;
+}
+.text-grey-m1 {
+  color: #7b7d81 !important;
+}
+.align-bottom {
+  vertical-align: bottom !important;
+}
+
+#storicoNoleggi,
+#anagraficaClienti,
+#anagraficaDipendenti {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+@media screen and (max-width: 994px) {
+  #search,
+  #searchEmployeeDiv,
+  #searchRentDiv,
+  #filtri {
+    width: 100%;
+  }
+
+  #rightButton {
+    width: 100%;
+  }
+
+  .cards {
+    display: block;
+  }
+
+  body,
+  html {
+    overflow-y: scroll;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  #sfondo {
+    background-repeat: repeat-y;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  #content {
+    height: auto;
+    min-height: 80vh;
+  }
+
+  #storicoNoleggi,
+  #anagraficaClienti,
+  #anagraficaDipendenti {
+    min-height: 80vh;
+    overflow-x: scroll;
+  }
+}
+
+@media screen and (min-width: 994px) {
+  .main-text h1 {
+    font-size: 8rem;
+    margin-bottom: 1rem;
+  }
+
+  .main-text h2 {
+    letter-spacing: 5px;
+    font-size: 2.5rem;
+  }
+
+  .main-text h2::before,
+  .main-text h2::after {
+    width: 2rem;
+    height: 3px;
+  }
+
+  .main-btn {
+    font-size: 2rem;
+    border: 3px solid var(--main-font-color);
+    padding: 2.5rem 3em;
+    margin-top: 2.5rem;
+  }
+}
+
+/* Animations */
+
+.main-text h1 {
+  transform: translateY(4rem);
+  opacity: 0;
+  animation: 0.5s fadeUp 0.5s forwards;
+}
+
+.main-text h2 {
+  transform: scale(2);
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    transform: translateY(4rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
