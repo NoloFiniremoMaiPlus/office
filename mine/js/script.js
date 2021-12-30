@@ -1,3 +1,5 @@
+let i = 1;
+
 function home() {
   location.reload();
 }
@@ -24,44 +26,37 @@ function login() {
   let user = document.getElementById("username").value;
   let pass = document.getElementById("password").value;
   let cookie = getCookie("SessionCookie");
-  console.log("Username: " + user, "\nPassword: " + pass);
   let credentials = {
-    username: user,
+    email: user,
     password: pass,
-    cookie: cookie,
   };
+  console.log(credentials);
   $.ajax({
-    url: "/db/login",
+    url: "http://192.168.1.9:8000" + "/v1/auth/login",
     type: "POST",
     data: credentials,
     dataType: "json",
     success: function (data) {
-      console.log(data);
-      if (!data.valid) {
-        $("#loginForm").trigger("reset");
-        document.getElementById("alertContent").textContent =
-          "Username o password errati";
-        $("#alertModal").modal("show");
-      } else {
-        $("#loginModal").modal("hide");
-        $("#loginForm").trigger("reset");
-        location.reload();
-        let newCookie = getCookie("SessionCookie");
-        console.log(newCookie);
-        let newData = { oldCookie: cookie, newCookie: newCookie };
-        if (newData.oldCookie != newData.newCookie) {
-          $.ajax({
-            url: "/updateCookie",
-            type: "POST",
-            data: newData,
-            dataType: "json",
-            contentType: "application/x-www-form-urlencoded",
-            success: function (data) {
-              console.log(data);
-            },
-          });
-        }
+      //$("#loginModal").modal("hide");
+      location.reload();
+      let newCookie = getCookie("SessionCookie");
+      console.log(newCookie);
+      if (cookie != newCookie) {
+        $.ajax({
+          url: "/updateCookie",
+          type: "POST",
+          data: newData,
+          dataType: "json",
+          success: function (data) {
+            console.log(data);
+          },
+        });
       }
+    },
+    error: function (data) {
+      $("#loginForm").trigger("reset");
+      document.getElementById("loginCaption").textContent =
+        "Username o password errati, ritenta";
     },
   });
 }
