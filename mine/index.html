@@ -46,30 +46,38 @@
   <body>
     <div id="mainpage">
       <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbar" aria-label="Navigation Bar">
-        <div class="collapse navbar-collapse" id="navButtons" role="Button List">
-          <ul class="navbar-nav mr-auto" id="buttonList">
+        <div class="collapse navbar-collapse maxWidth" id="navButtons" role="Button List">
+          <ul class="navbar-nav mr-auto maxWidth">
             <li class="nav-item active">
-              <a class="navbrand" href="#" role="button" onclick="home()" aria-label="Back To Homepage">NoloNolo</a>
+              <a class="navbrand" id="home" href="#" role="button" onclick="home()"
+                aria-label="Back To Homepage">NoloNolo</a>
             </li>
             <li class="nav-item active">
-              <a class="navlink" href="#" role="button" aria-label="Show Inventory">Inventario</a>
+              <a class="navlink" id="inventario" href="#" role="button" aria-label="Show Inventory">Inventario</a>
             </li>
             <li class="nav-item">
-              <a class="navlink" href="#" role="button" onclick="loginRequired()" aria-label=" Show
+              <a class="navlink" id="Clients" href="#" role="button" onclick="loginRequired()" aria-label=" Show
                 Clients">Clienti</a>
             </li>
             <li class="nav-item">
-              <a class="navlink" href="#" role="button" onclick="loginRequired()" aria-label="Show Rentals">Noleggi</a>
+              <a class="navlink" id="Rentals" href="#" role="button" onclick="loginRequired()"
+                aria-label="Show Rentals">Noleggi</a>
             </li>
             <li class="nav-item" id="login">
-              <button id="loginButton" class="btn btn-info m-1" role="Login Button" aria-label="Login"
-                data-bs-toggle="modal" data-bs-target="#loginModal">
-                Login
-              </button>
+              <div>
+                <button id="loginButton" class="btn btn-info m-1" role="Login Button" aria-label="Login"
+                  data-bs-toggle="modal" data-bs-target="#LoginModal">
+                  Login
+                </button>
+                <button id="logoutButton" class="btn btn-danger m-1" role="Logout Button" onclick="logout()"
+                  aria-label="Logout">
+                  Logout
+                </button>
+              </div>
             </li>
         </div>
       </nav>
-      <main class="text-container" aria-label="main-content" role="container">
+      <main class="text-container" aria-label="welcome page">
         <div class="text">
           <h1>NoloNolo Plus</h1>
           <h2>Noleggia il tuo sgronfax preferito a costi bassissimi!</h2>
@@ -80,14 +88,12 @@
     <!-- MODALS HERE -->
 
     <!-- Modale Login -->
-    <div class="modal fade" id="loginModal" role="dialog" style="z-index: 9999;" role="dialog"
-      aria-labelledby="loginLabel" aria-hidden="true">
+    <div class="modal fade" id="LoginModal" role="dialog" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="card-body bg-info text-white" id="loginModal" aria-label="Login Modal">
-            <div id="closeButton">
-              <button type="button" id="loginButton" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close pop-up"></button>
+          <div class="card-body bg-info text-white" id="loginCard" aria-label="Login Card">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
             </div>
             <div class="text-center">
               <h2 class="fw-bold mb-2 text-uppercase">Inserisci le Credenziali</h2>
@@ -96,15 +102,15 @@
               <hr style="height:2px;border:none;color:rgb(255, 255, 255);" />
               <form id="loginForm">
                 <div class="form-outline form-white mb-4">
-                  <label class="form-label" for="username">Username</label>
-                  <input type="username" id="username" placeholder="Inserisci username"
-                    class="form-control form-control-lg" />
+                  <label class="form-label" for="email">Email</label>
+                  <input type="text" id="email" placeholder="Inserisci email"
+                    class="form-control form-control-lg max-width" />
                 </div>
 
                 <div class="form-outline form-white mb-4">
                   <label class="form-label" for="password">Password</label>
                   <input type="password" id="password" placeholder="Insert your password"
-                    class="form-control form-control-lg" />
+                    class="form-control form-control-lg max-width" />
                 </div>
 
                 <button class="btn btn-outline-light btn-lg px-5" type="button" onclick="login()"
@@ -117,22 +123,155 @@
     </div>
 
     <!-- Modale Permessi -->
-    <div class="modal fade" id="loginRequiredModal" role="dialog" style="z-index: 9999;" role="dialog"
-      aria-labelledby="loginLabel" aria-hidden="true">
+    <div class="modal fade" id="LoginRequiredModal" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="card-body bg-info text-white" id="loginModal" aria-label="Login Modal">
-            <div id="closeButton">
-              <button type="button" id="loginButton" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close pop-up"></button>
+          <div class="card-body bg-info text-white" aria-label="Login Required Modal">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
             </div>
             <div class="text-center form-outline form-white mb-4">
-              <h5 class="mb-2" id="loginRequiredText"></h5>
+              <h5 class="mb-2" id="loginRequiredText">È necessario avere effettuato il login per accedere a questa
+                funzionalità</h5>
             </div>
           </div>
         </div>
       </div>
     </div>
   </body>
+
+  <!-- Modale Clienti -->
+  <div class="modal fade" id="UserAnagraphicModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="UserAnagraphicCard" aria-label="User Anagraphic Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <table>
+              <caption>
+                <p id="usersCaption">Anagrafica Clienti</p>
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Id</th>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Cognome</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Telefono</th>
+                  <th scope="col">Azione</th>
+                </tr>
+              </thead>
+              <tbody id="ADBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Aggiunta Annotazioni -->
+  <div class="modal fade" id="AddAnnotationsModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="card-body bg-info text-light" id="annotationsModal" aria-label="Add Annotations Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <h3 class="cardTitle">Inserisci annotazioni cliente</h3>
+          </div>
+          <div>
+            <form id="annotationsForm" class="text-center">
+              <div class="form-outline formatAnnotations">
+                <label class="form-label bold" for="annotations">Seleziona</label>
+                <select name="annotations" id="annotations" multiple>
+                  <option value="Educato">Educato</option>
+                  <option value="Puntuale">Puntuale</option>
+                  <option value="Non rompe nulla">Non rompe nulla</option>
+                  <option value="Pagamenti puntuali">Pagamenti puntuali</option>
+                  <option value="Maleducato">Maleducato</option>
+                  <option value="Ritardatario">Ritardatario</option>
+                  <option value="Rompe gli oggetti">Rompe gli oggetti</option>
+                  <option value="Pagamenti in ritardo">Pagamenti in ritardo</option>
+                  <option value="Solo top di gamma">Solo top di gamma</option>
+                  <option value="Basta che funzioni">Basta che funzioni</option>
+                  <option value="Tutto rgb">Solo rgb</option>
+                  <option value="Solo pagamenti con carta">Non usa i contanti</option>
+                  <option value="Solo pagamenti in contanti">Non ha una carta di credito</option>
+                </select>
+              </div>
+              <div class="form-outline form-white mb-4 formatAnnotations column">
+                <label class="form-label bold" for="comment">Annotazione Libera</label>
+                <textarea id="comment" placeholder="Inserisci commento" class="form-control form-control-lg"
+                  rows="5"></textarea>
+              </div>
+              <button class="btn btn-outline-light btn-lg px-5 bold maxWidth" type="button" onclick="addAnnotations()"
+                aria-label="submit-annotations">Inserisci</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Mostra Annotazioni -->
+  <div class="modal fade" id="ShowAnnotationsModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="card-body bg-light text-dark" aria-label="User Table Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <h3 class="cardTitle">Annotazioni</h3>
+            <div class="form-outline form-white mb-4 showAnnotations">
+              <label class="form-label bold" for="features">Caratteristiche Utente</label>
+              <ul id="features" class="text-center">
+              </ul>
+            </div>
+            <div class="form-outline form-white mb-4 showAnnotations">
+              <label class="form-label bold" for="commenti">Commento Manager</label>
+              <p class="list-group-item list-group-item-dark text-center" id="commenti"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Noleggi -->
+  <div class="modal fade" id="UserRentalsModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="UserRentalsCard" aria-label="User Rentals Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <table>
+              <caption>
+                <p id="rentalsCaption">Noleggi Clienti</p>
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">User</th>
+                  <th scope="col">Oggetto</th>
+                  <th scope="col">Stato</th>
+                  <th scope="col">Dal</th>
+                  <th scope="col">Al</th>
+                  <th scope="col">Prezzo Totale</th>
+                  <th scope="col">Commento</th>
+                </tr>
+              </thead>
+              <tbody id="RentalsBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </html>

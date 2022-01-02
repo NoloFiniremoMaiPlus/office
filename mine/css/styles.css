@@ -12,6 +12,10 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 body,
 html {
   color: #272727;
@@ -24,8 +28,32 @@ html {
   overflow: hidden; /*! can't scroll on body */
 }
 
-::-webkit-scrollbar {
-  display: none;
+/* Miscellanea */
+.bold {
+  font-weight: bold;
+}
+
+.maxWidth {
+  width: 100% !important;
+}
+
+.white {
+  color: white;
+}
+
+.column {
+  flex-direction: column !important;
+}
+
+/* Body */
+
+main {
+  background-color: rgba(248, 249, 250, 0.7);
+  margin: 1em;
+  padding: 1em;
+  height: 90%;
+  border-radius: 20px;
+  opacity: 1;
 }
 
 #navbar {
@@ -40,26 +68,11 @@ html {
   height: 100%;
   width: 100%;
   z-index: -1;
-  /* background-color: #252525; */
   background-image: url("./images/sfondo.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.8;
-}
-
-#content {
-  height: 100%;
-  width: 100%;
-}
-
-a {
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.3em;
-  margin: 0 0.8em 0 0;
 }
 
 .navbrand {
@@ -76,6 +89,7 @@ a {
   color: #141414;
 }
 
+/* Links */
 .navlink {
   display: flex;
   justify-content: center;
@@ -90,14 +104,16 @@ a {
   color: #141414;
 }
 
-#navButtons {
-  width: 100%;
+a {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
+  margin: 0 0.8em 0 0;
 }
 
-#buttonList {
-  width: 100%;
-}
-
+/* Login & Logout */
 #login {
   display: flex;
   flex-direction: row-reverse;
@@ -105,21 +121,16 @@ a {
   padding-right: 1%;
 }
 
+#logoutButton {
+  display: none;
+}
+
 button {
   color: white !important;
   font-weight: 500 !important;
-  /* border: 1px solid red !important; */
 }
 
-main {
-  background-color: rgba(248, 249, 250, 0.7);
-  margin: 1em;
-  padding: 1em;
-  height: 90%;
-  border-radius: 20px;
-  opacity: 1;
-}
-
+/* Welcome Text */
 .text-container {
   display: flex;
   flex-direction: column;
@@ -151,7 +162,6 @@ main {
 }
 
 /* Animations */
-
 .text h1 {
   animation: fadeIn 1s forwards;
 }
@@ -170,7 +180,6 @@ main {
     opacity: 1;
   }
 }
-
 @-webkit-keyframes slideIn {
   0% {
     transform: translateX(-900px);
@@ -198,23 +207,136 @@ main {
   }
 }
 
-#loginModal {
-  border-radius: 1rem;
-  border: 1px !important;
+/* Modals */
+.modal-content {
+  background-color: transparent !important;
 }
 
-.form-label {
-  font-size: 1.2em;
-  font-weight: 500;
-}
-
-#closeButton {
+.closeButton {
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
 }
 
-.modal-content {
-  background-color: transparent !important;
-  border: none !important;
+.form-label {
+  font-size: 1.2em;
+  font-weight: 500;
+  margin: 0.5rem;
+  text-align: center;
+}
+
+.modalDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+}
+
+.form-control {
+  text-align: center;
+  width: fit-content !important;
+}
+
+.actionBar button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  height: 2.2em;
+  margin: 0.1rem;
+}
+
+.modalActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardTitle {
+  font-size: 1.5em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.formatAnnotations {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2rem 0;
+}
+
+.showAnnotations {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2rem 0;
+}
+
+#LoginModal {
+  border-radius: 1rem;
+  border: 1px !important;
+}
+
+#annotations {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50% !important;
+  height: 11em !important;
+  margin: 2rem 0;
+}
+
+#comment {
+  width: 65% !important;
+  height: 100%;
+  border-radius: 1rem;
+  border: 1px !important;
+  font-size: 1em;
+  margin: 0.5em;
+}
+
+#features {
+  padding: 0;
+}
+
+/* Tables */
+table,
+th,
+tr,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  margin: 1rem;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid black !important;
+  border-bottom: 1px solid black !important;
+}
+
+th {
+  font-size: 1.5rem;
+}
+
+td {
+  font-size: 1rem;
+}
+
+table caption {
+  caption-side: top;
+  color: var(--main-font-dark-gray);
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
 }

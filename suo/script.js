@@ -3055,22 +3055,3 @@ function getCookie(name) {
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
-
-/* <div class="card" style="width: 18rem;">
-                                    <img id="card-image" src="/media/lespaul1.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                          <h5 class="card-title">Oggetto</h5>
-                                          <p class="card-text">Descrizione oggetto</p>
-                                    </div>
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item">`+ modello +`</li>
-                                        <li class="list-group-item">`+ marca +`</li>
-                                        <li class="list-group-item">`+ anno +`</li>
-                                        <li class="list-group-item">`+ prezzo +`</li>
-                                    </ul>
-                                    </div> */
-
-/*{ <div class="card-body">
-                                    <h5 class="card-title">Card title</h5>
-                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                </div> }*/
