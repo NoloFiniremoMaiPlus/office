@@ -312,14 +312,16 @@ function addUserAnnotations() {
   }
   let comment = $("#userComment").val();
   $.ajax({
-    url: localhost + `/v1/users/${id}/annotation`,
+    url: localhost + `/v1/users/${id}`,
     type: "POST",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
     data: {
-      quick: annotations,
-      text: comment,
+      annotation: {
+        quick: annotations,
+        text: comment,
+      }
     },
     success: function (res) {
       location.reload();
@@ -336,15 +338,16 @@ function showUserAnnotations(index) {
   $("#UserAnagraphicModal").modal("hide");
   $("#ShowAnnotationsModal").modal("show");
   $.ajax({
-    url: localhost + "/v1/users/" + id + "/annotation",
+    url: localhost + `/v1/users/${id}`,
     type: "GET",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
     success: function (res) {
       console.log(res);
-      notes = res.quick || [];
-      comment = res.text;
+      annotation = res.annotation;
+      notes = annotation.quick || [];
+      comment = annotation.text;
       $("#commenti").empty().text(comment);
       $("#features").empty();
       for (let note of notes) {
