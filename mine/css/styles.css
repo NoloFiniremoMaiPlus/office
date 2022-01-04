@@ -1,7 +1,7 @@
 :root {
-  --main-font-color: rgb(53, 246, 35);
+  --main-font-color: #17a9e7;
   --main-white: rgb(0, 0, 0);
-  --main-font-dark-gray: #4d4d4d;
+  --main-font-dark-gray: #252525;
   --main-footer-bg-color: #141414;
   --main-font-family: cursive;
 }
@@ -25,12 +25,16 @@ html {
   letter-spacing: 0;
   height: 100%;
   text-decoration: none;
-  overflow: hidden; /*! can't scroll on body */
+  overflow: scroll; /*! can't scroll on body */
 }
 
 /* Miscellanea */
 .bold {
   font-weight: bold;
+}
+
+.underline {
+  text-decoration: underline;
 }
 
 .maxWidth {
@@ -43,6 +47,10 @@ html {
 
 .column {
   flex-direction: column !important;
+}
+
+.noMargin {
+  margin: 0 !important;
 }
 
 /* Body */
@@ -89,6 +97,10 @@ main {
   color: #141414;
 }
 
+.card-body {
+  border-radius: 1rem !important;
+}
+
 /* Links */
 .navlink {
   display: flex;
@@ -102,6 +114,7 @@ main {
 
 .navlink:hover {
   color: #141414;
+  text-decoration: underline;
 }
 
 a {
@@ -111,6 +124,7 @@ a {
   align-items: center;
   font-size: 1.3em;
   margin: 0 0.8em 0 0;
+  width: max-content !important;
 }
 
 /* Login & Logout */
@@ -210,6 +224,26 @@ button {
 /* Modals */
 .modal-content {
   background-color: transparent !important;
+  border: none !important;
+}
+
+/* Per i due modali piu larghi ci sono restrizioni nel caso si lavori da schermi piccoli in ufficio */
+@media (max-width: 1674px) {
+  .modal-content1 {
+    /* overflow: scroll !important; */
+    position: relative !important;
+    overflow: auto !important;
+    height: 100% !important;
+  }
+}
+
+@media (max-width: 1400px) {
+  .modal-content2 {
+    /* overflow: scroll !important; */
+    position: relative !important;
+    overflow: auto !important;
+    height: 100% !important;
+  }
 }
 
 .closeButton {
@@ -236,9 +270,14 @@ button {
 
 .form-control {
   text-align: center;
-  width: fit-content !important;
 }
 
+#LoginModal {
+  border-radius: 1rem;
+  border: 1px !important;
+}
+
+/* Action Buttons */
 .actionBar button {
   display: flex;
   justify-content: center;
@@ -259,15 +298,22 @@ button {
   font-size: 1.5em;
   font-weight: 700;
   text-align: center;
+  margin-bottom: 3rem;
+  text-decoration: underline;
 }
 
 .formatAnnotations {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-around;
   align-items: center;
-  width: 100%;
+  width: 100% !important;
   margin: 2rem 0;
+}
+
+/* Annotations */
+.annotationsBg {
+  background-color: rgb(111, 227, 250) !important;
 }
 
 .showAnnotations {
@@ -279,12 +325,18 @@ button {
   margin: 2rem 0;
 }
 
-#LoginModal {
-  border-radius: 1rem;
-  border: 1px !important;
+#annotationsLabels {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50% !important;
+  height: 11em !important;
+  margin: 2rem 0;
+  border: 2px solide black !important;
 }
 
-#annotations {
+#userAnnotations {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -294,11 +346,22 @@ button {
   margin: 2rem 0;
 }
 
-#comment {
+#rentalAnnotations {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50% !important;
+  height: 11em !important;
+  margin: 2rem 0;
+  border: 2px solid black !important;
+}
+
+.comment {
   width: 65% !important;
   height: 100%;
   border-radius: 1rem;
-  border: 1px !important;
+  border: 2px solid black !important;
   font-size: 1em;
   margin: 0.5em;
 }
@@ -339,4 +402,49 @@ table caption {
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
+}
+
+td input {
+  width: fit-content !important;
+}
+
+/* Bills */
+
+#BillCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 85vh;
+  border: 1px solid black !important;
+}
+
+#bill {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+  height: 80%;
+  border: 4px solid black !important;
+  padding: 1rem;
+}
+
+.billRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+}
+
+.billButton {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  width: 25%;
+  height: 2.2em;
+  margin: 0.1rem;
 }

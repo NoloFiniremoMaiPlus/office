@@ -53,18 +53,22 @@
                 aria-label="Back To Homepage">NoloNolo</a>
             </li>
             <li class="nav-item active">
-              <a class="navlink" id="inventario" href="#" role="button" aria-label="Show Inventory">Inventario</a>
+              <a class="navlink bold" id="inventario" href="#" role="button" aria-label="Show Inventory">Inventario</a>
             </li>
             <li class="nav-item">
-              <a class="navlink" id="Clients" href="#" role="button" onclick="loginRequired()" aria-label=" Show
+              <a class="navlink bold" id="Clients" href="#" role="button" onclick="loginRequired()" aria-label=" Show
                 Clients">Clienti</a>
             </li>
             <li class="nav-item">
-              <a class="navlink" id="Rentals" href="#" role="button" onclick="loginRequired()"
-                aria-label="Show Rentals">Noleggi</a>
+              <a class="navlink bold" id="Rentals" href="#" role="button" onclick="loginRequired()"
+                aria-label="Show Rentals">Noleggi Attivi</a>
             </li>
-            <li class="nav-item" id="login">
-              <div>
+            <li class="nav-item">
+              <a class="navlink bold" id="OldRentals" href="#" role="button" onclick="loginRequired()"
+                aria-label="Show Rentals">Noleggi Conclusi</a>
+            </li>
+            <li class="nav-item maxWidth">
+              <div id="login">
                 <button id="loginButton" class="btn btn-info m-1" role="Login Button" aria-label="Login"
                   data-bs-toggle="modal" data-bs-target="#LoginModal">
                   Login
@@ -101,16 +105,16 @@
                 sbloccare tutte le funzionalità</p>
               <hr style="height:2px;border:none;color:rgb(255, 255, 255);" />
               <form id="loginForm">
-                <div class="form-outline form-white mb-4">
-                  <label class="form-label" for="email">Email</label>
+                <div class="form-outline form-white mb-4 maxWidth">
+                  <label class="form-label underline" for="email">Email</label>
                   <input type="text" id="email" placeholder="Inserisci email"
-                    class="form-control form-control-lg max-width" />
+                    class="form-control form-control-lg maxWidth" />
                 </div>
 
                 <div class="form-outline form-white mb-4">
-                  <label class="form-label" for="password">Password</label>
+                  <label class="form-label underline" for="password">Password</label>
                   <input type="password" id="password" placeholder="Insert your password"
-                    class="form-control form-control-lg max-width" />
+                    class="form-control form-control-lg maxWidth noMargin" />
                 </div>
 
                 <button class="btn btn-outline-light btn-lg px-5" type="button" onclick="login()"
@@ -143,7 +147,7 @@
   <!-- Modale Clienti -->
   <div class="modal fade" id="UserAnagraphicModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content modalDiv">
+      <div class="modal-content modalDiv modal-content2">
         <div class=" card-body bg-white text-black" id="UserAnagraphicCard" aria-label="User Anagraphic Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
@@ -172,11 +176,12 @@
     </div>
   </div>
 
-  <!-- Modale Aggiunta Annotazioni -->
-  <div class="modal fade" id="AddAnnotationsModal" role="dialog" aria-hidden="true">
+  <!-- Modale Aggiunta Annotazioni Utente -->
+  <div class="modal fade" id="AddUserAnnotationsModal" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="card-body bg-info text-light" id="annotationsModal" aria-label="Add Annotations Card">
+        <div class="card-body annotationsBg text-dark text-center" id="userAnnotationsModal"
+          aria-label="Add User Annotations Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
           </div>
@@ -186,8 +191,9 @@
           <div>
             <form id="annotationsForm" class="text-center">
               <div class="form-outline formatAnnotations">
-                <label class="form-label bold" for="annotations">Seleziona</label>
-                <select name="annotations" id="annotations" multiple>
+                <label class="form-label bold underline" for="userAnnotations">Seleziona</label>
+                <select name="userAnnotations" class="annotationsLabels bg-light text-center" id="userAnnotations"
+                  multiple>
                   <option value="Educato">Educato</option>
                   <option value="Puntuale">Puntuale</option>
                   <option value="Non rompe nulla">Non rompe nulla</option>
@@ -204,12 +210,54 @@
                 </select>
               </div>
               <div class="form-outline form-white mb-4 formatAnnotations column">
-                <label class="form-label bold" for="comment">Annotazione Libera</label>
-                <textarea id="comment" placeholder="Inserisci commento" class="form-control form-control-lg"
-                  rows="5"></textarea>
+                <label class="form-label bold underline" for="userComment">Annotazione Libera</label>
+                <textarea placeholder="Inserisci commento"
+                  class="form-control bg-light form-control-lg comment text-center" rows="5"></textarea>
               </div>
-              <button class="btn btn-outline-light btn-lg px-5 bold maxWidth" type="button" onclick="addAnnotations()"
-                aria-label="submit-annotations">Inserisci</button>
+              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
+                onclick="addUserAnnotations()" aria-label="submit-annotations">Inserisci</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Aggiunta Annotazioni Noleggio -->
+  <div class="modal fade" id="AddRentalAnnotationsModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="card-body annotationsBg text-dark" id="rentalAnnotationsModal"
+          aria-label="Add Rental Annotations Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <h3 class="cardTitle">Inserisci annotazioni noleggio</h3>
+          </div>
+          <div>
+            <form id="annotationsForm" class="text-center">
+              <div class="form-outline formatAnnotations">
+                <label class="form-label bold underline" for="rentalAnnotations">Seleziona</label>
+                <select name="rentalAnnotations" class="annotationsLabels bg-light text-center" id="rentalAnnotations"
+                  multiple>
+                  <option value="Con Penale">Con Penale</option>
+                  <option value="Con Sconto">Con Sconto</option>
+                  <option value="Consegna Anticipata">Consegna Anticipata</option>
+                  <option value="Consegna Prevista">Consegna Prevista</option>
+                  <option value="Consegna Posticipata">Consegna Posticipata</option>
+                  <option value="Oggetto Integro">Oggetto Integro</option>
+                  <option value="Oggetto Danneggiato">Oggetto Danneggiato</option>
+                  <option value="Oggetto Distrutto">Oggetto Distrutto</option>
+                  <option value="Oggetto Perso">Oggetto Perso</option>
+                </select>
+              </div>
+              <div class="form-outline form-lg mb-4 formatAnnotations column">
+                <label class="form-label bold underline" for="rentalComment">Annotazione Libera</label>
+                <textarea placeholder="Inserisci commento"
+                  class="form-control form-control-lg bg-light comment text-center" rows="5"></textarea>
+              </div>
+              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
+                onclick="addRentalAnnotations()" aria-label="submit-annotations">Inserisci</button>
           </div>
         </div>
       </div>
@@ -227,7 +275,7 @@
           <div>
             <h3 class="cardTitle">Annotazioni</h3>
             <div class="form-outline form-white mb-4 showAnnotations">
-              <label class="form-label bold" for="features">Caratteristiche Utente</label>
+              <label class="form-label bold" for="features">Caratteristiche</label>
               <ul id="features" class="text-center">
               </ul>
             </div>
@@ -244,7 +292,7 @@
   <!-- Modale Noleggi -->
   <div class="modal fade" id="UserRentalsModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content modalDiv">
+      <div class="modal-content modalDiv modal-content1">
         <div class=" card-body bg-white text-black" id="UserRentalsCard" aria-label="User Rentals Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
@@ -252,22 +300,66 @@
           <div>
             <table>
               <caption>
-                <p id="rentalsCaption">Noleggi Clienti</p>
+                <p id="rentalsCaption"></p>
               </caption>
               <thead>
                 <tr>
+                  <th scope="col">Noleggio</th>
                   <th scope="col">User</th>
                   <th scope="col">Oggetto</th>
                   <th scope="col">Stato</th>
-                  <th scope="col">Dal</th>
-                  <th scope="col">Al</th>
-                  <th scope="col">Prezzo Totale</th>
-                  <th scope="col">Commento</th>
+                  <th scope="col">Dal - Al</th>
+                  <th scope="col">Spesa(€)</th>
+                  <th scope="col">Azioni</th>
                 </tr>
               </thead>
               <tbody id="RentalsBody">
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Fattura -->
+  <div class="modal fade" id="BillModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="BillCard" aria-label="Bill Card">
+          <div class="closeButton billButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div id="bill">
+            <h3 class="cardTitle outline">Fattura Noleggio</h3>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Id Noleggio:</p>
+              <p id="rentalId"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Id Cliente:</p>
+              <p id="billUserId"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Inizio Noleggio:</p>
+              <p id="billStart"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Fine Noleggio:</p>
+              <p id="billEnd"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Costo Noleggio:</p>
+              <p id="billCost"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Variazione Prezzo:</p>
+              <p id="billSurcharge"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button" onclick="print()"
+                aria-label="print-bill">Stampa Fattura</button>
+            </div>
           </div>
         </div>
       </div>
