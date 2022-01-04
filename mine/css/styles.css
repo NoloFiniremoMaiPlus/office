@@ -294,6 +294,12 @@ button {
   justify-content: center;
 }
 
+.modalActions button {
+  width: 40%;
+  height: 2.2em;
+  margin: 0.1rem;
+}
+
 .cardTitle {
   font-size: 1.5em;
   font-weight: 700;

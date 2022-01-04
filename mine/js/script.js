@@ -311,9 +311,10 @@ function addUserAnnotations() {
     annotations.push(rawAnnotations[i].value);
   }
   let comment = $("#userComment").val();
+  console.log(comment);
   $.ajax({
     url: localhost + `/v1/users/${id}`,
-    type: "POST",
+    type: "PATCH",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
@@ -321,7 +322,7 @@ function addUserAnnotations() {
       annotation: {
         quick: annotations,
         text: comment,
-      }
+      },
     },
     success: function (res) {
       location.reload();
@@ -369,7 +370,7 @@ function addRentalAnnotationsPopUp(index) {
   $("#AddRentalAnnotationsModal").modal("show");
 }
 
-function addRentalsAnnotations() {
+function addRentalAnnotations() {
   console.log("Aggiungo le annotazioni");
   let index = currentNotationIndex;
   let id = $(`#rental${index}Id`).val().trim();
@@ -380,14 +381,16 @@ function addRentalsAnnotations() {
   }
   let comment = $("#rentalComment").val();
   $.ajax({
-    url: localhost + `/v1/rentals/${id}/annotation`,
-    type: "POST",
+    url: localhost + `/v1/rentals/${id}`,
+    type: "PATCH",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
     data: {
-      quick: annotations,
-      text: comment,
+      annotation: {
+        quick: annotations,
+        text: comment,
+      },
     },
     success: function (res) {
       location.reload();
@@ -404,15 +407,16 @@ function showRentalAnnotations(index) {
   $("#UserRentalsModal").modal("hide");
   $("#ShowAnnotationsModal").modal("show");
   $.ajax({
-    url: localhost + "/v1/rentals/" + id + "/annotation",
+    url: localhost + "/v1/rentals/" + id,
     type: "GET",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
     success: function (res) {
       console.log(res);
-      notes = res.quick || [];
-      comment = res.text;
+      annotation = res.annotation;
+      notes = annotation.quick || [];
+      comment = annotation.text;
       $("#commenti").empty().text(comment);
       $("#features").empty();
       for (let note of notes) {
@@ -443,6 +447,8 @@ function insertRentalActions(index, state) {
     $(`#rental${index}State`).prop("disabled", true);
   } else {
     $("#rentalBill" + index).hide();
+    $("#rentalAddNotes" + index).hide();
+    $("#rentalGetNotes" + index).hide();
   }
 
   if (state != "Booked") {
