@@ -27,17 +27,11 @@
     <!-- JQuery UI DatePicker IT
     <script type="text/javascript" src="/js/datepickerIT.js"></script> -->
 
-    <!-- <link
-      rel="stylesheet"
-      href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
-    />
-    JQuery UI CDN
+    <!-- JQuery UI CDN -->
+    <!-- This parts is used for the price slider -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 
     <!-- Script -->
     <script type="text/javascript" src="./js/script.js"></script>
@@ -53,7 +47,8 @@
                 aria-label="Back To Homepage">NoloNolo</a>
             </li>
             <li class="nav-item active">
-              <a class="navlink bold" id="inventario" href="#" role="button" aria-label="Show Inventory">Inventario</a>
+              <a class="navlink bold" id="Inventory" href="#" role="button" onclick="showInventory()"
+                aria-label="Show Inventory">Inventario</a>
             </li>
             <li class="nav-item">
               <a class="navlink bold" id="Clients" href="#" role="button" onclick="loginRequired()" aria-label=" Show
@@ -308,10 +303,12 @@
                 <tr>
                   <th scope="col">Noleggio</th>
                   <th scope="col">User</th>
+                  <th scope="col">Responsabile</th>
                   <th scope="col">Oggetto</th>
                   <th scope="col">Stato</th>
                   <th scope="col">Dal - Al</th>
-                  <th scope="col">Spesa(€)</th>
+                  <th scope="col">Dati</th>
+                  <th scope="col">Spesa Totale(€)</th>
                   <th scope="col">Azioni</th>
                 </tr>
               </thead>
@@ -351,17 +348,223 @@
               <p id="billEnd"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Costo Noleggio:</p>
-              <p id="billCost"></p>
+              <p class="bold">Prezzo Base e Giornaliero:</p>
+              <p id="billExpenses"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Variazione Prezzo:</p>
-              <p id="billSurcharge"></p>
+              <p class="bold">Sconto:</p>
+              <p id="billDiscount"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Ritardo:</p>
+              <p id="billLateDays"></p>
+            </div>
+            <div class="form-outline form-white mb-4 billRow">
+              <p class="bold">Costo Totale:</p>
+              <p id="billTotalCost"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
               <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button" onclick="print()"
                 aria-label="print-bill">Stampa Fattura</button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Inventario -->
+  <div class="modal fade" id="InventoryModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="InventoryCard" aria-label="Inventory Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <h1>Inventario</h1>
+          <div id="inventoryHeader">
+            <div id="inventoryFilters">
+              <div id="filtersRow">
+                <div id="dropdowns">
+                  <div id="categoryFilter">
+                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
+                      id="categoryDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false">Categoria</button>
+                    <div id="category" class="dropdown-menu" aria-labelledby="categoryDropdownMenuButton">
+                      <a class="dropdown-item" href="#">Low-End</a>
+                      <a class="dropdown-item" href="#">Mid-End</a>
+                      <a class="dropdown-item" href="#">High-End</a>
+                      <a class="dropdown-item" href="#">PC-MasterRace</a>
+                      <a class="dropdown-item" href="#">Crypto-Mining</a>
+                      <a class="dropdown-item" href="#">Postazione Streaming</a>
+                    </div>
+                  </div>
+                  <div id="brandFilter">
+                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
+                      id="brandDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false">Marca</button>
+                    <div id="brand" class="dropdown-menu" aria-labelledby="brandDropdownMenuButton">
+                      <a class="dropdown-item" href="#" value="asus">Asus</a>
+                      <a class="dropdown-item" href="#" value="msi">MSI</a>
+                      <a class="dropdown-item" href="#" value="zotac">Zotac</a>
+                    </div>
+                  </div>
+                  <div id="stateFilter">
+                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
+                      id="statusDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false">Condizione</button>
+                    <div id="state" class="dropdown-menu" aria-labelledby="statusDropdownMenuButton">
+                      <a class="dropdown-item" href="#" value="Mint">Nuova</a>
+                      <a class="dropdown-item" href="#" value="Slightly Damaged">Lievemente Danneggiata</a>
+                      <a class="dropdown-item" href="#" value="Damaged">Pesantemente Danneggiata</a>
+                      <a class="dropdown-item" href="#" value="Broken">Rotta</a>
+                    </div>
+                  </div>
+                  <button id="resetFiltersButton" type="button" aria-label="Reset filtri" class="btn btn-danger"
+                    onclick="resetFilters()">
+                    Reset filters
+                  </button>
+                </div>
+                <div id="costRow" class="text-center">
+                  <div id="prezzo">
+                    <div class="priceInput">
+                      <label for="minAmount">Min €</label>
+                      <input type="text" id="minAmount" aria-label="Prezzo minimo" onchange="updateSlider()" />
+                    </div>
+                    <div class="priceInput">
+                      <label for="maxAmount">Max €</label>
+                      <input type="text" id="maxAmount" aria-label="Prezzo massimo" onchange="updateSlider()" />
+                    </div>
+                  </div>
+                  <div id="slider-range"></div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary bold" type="button" onclick="searchItems()" aria-label="add-item">Cerca
+              Oggetti</button>
+            <hr>
+            <button class="btn btn-warning text-dark bold" type="button" onclick="addItem()"
+              aria-label="add-item">Aggiungi
+              Oggetto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Oggetti Inventario -->
+  <div class="modal fade" id="ItemsModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv modal-content1">
+        <div class=" card-body bg-white text-black" id="ItemsCard" aria-label="Items Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <table>
+              <caption>
+                <p id="rentalsCaption">Oggetti Trovati</p>
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Immagine</th>
+                  <th scope="col">Nome</th>
+                  <th scope="col">Descrizione</th>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Marca</th>
+                  <th scope="col">Stato</th>
+                  <th scope="col">Costo(€)</th>
+                  <th scope="col">Sconto(%)</th>
+                  <th scope="col">Azioni</th>
+                </tr>
+              </thead>
+              <tbody id="ItemsBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Aggiunta Oggetto -->
+  <div class="modal fade" id="AddItemModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="AddItemCard" aria-label="AddItem Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <h1 id="itemTitle">Aggiungi Oggetto</h1>
+            <form>
+              <div class="form-group">
+                <label class="itemLabel" for="imageInput">Immagine:</label>
+                <input type="file" class="form-control" id="imageInput" aria-describedby="Image"
+                  placeholder="Inserire Immagine">
+              </div>
+              <div class=" form-group">
+                <label class="itemLabel" for="nameInput">Nome:</label>
+                <input type="text" class="form-control" id="nameInput" placeholder="Inserire Nome">
+              </div>
+              <div class=" form-group">
+                <label class="itemLabel" for="descriptionInput">Descrizione:</label>
+                <input type="text" class="form-control" id="descriptionInput" placeholder="Inserire Descrizione">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="categoryInput">Categoria:</label>
+                <input type="text" class="form-control" id="categoryInput" placeholder="Inserire Categoria">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="brandInput">Marca:</label>
+                <input type="text" class="form-control" id="brandInput" placeholder="Inserire Marca">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="stateInput">Stato:</label>
+                <input type="text" class="form-control" id="stateInput" placeholder="Inserire Stato">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="costInput">Costo(€):</label>
+                <input type="number" class="form-control" id="costInput" placeholder="Inserire Costo">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="noteInput">Sconto(%):</label>
+                <input type="text" class="form-control" id="noteInput" placeholder="Inserire Nota">
+              </div>
+              <button class="btn btn-dark m-1" type="button" id="itemButton" onclick="loginFromItemRequired()"
+                aria-label="add-item">Aggiungi</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale Disponibilità -->
+  <div class="modal fade" id="AvaiabilityModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="AvaiabilityCard" aria-label="Avaiability Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div>
+            <h1 id="in-Disponibilità"></h1>
+            <form>
+              <div class="form-group">
+                <label class="disponibilityLabel" for="fromInput">Dal:</label>
+                <input type="date" class="form-control" id="fromInput" placeholder="Inserire Data Inizio">
+              </div>
+              <div class="form-group">
+                <label class="disponibilityLabel" for="toInput">Al:</label>
+                <input type="date" class="form-control" id="toInput" placeholder="Inserire Data Fine">
+              </div>
+              <button class="btn btn-dark m-1" type="button" id="avaiabilityButton" onclick="addAvaiability()"
+                aria-label="add-avaiability">Rendi Disponibile</button>
+              <button class="btn btn-dark m-1" type="button" id="unavaiabilityButton" onclick="removeAvaiability()"
+                aria-label="remove-avaiability">Rendi
+                Indisponibile</button>
+            </form>
           </div>
         </div>
       </div>

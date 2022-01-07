@@ -222,9 +222,14 @@ button {
 }
 
 /* Modals */
+.id-cell {
+  width: 8.5rem !important;
+}
+
 .modal-content {
   background-color: transparent !important;
   border: none !important;
+  width: max-content;
 }
 
 /* Per i due modali piu larghi ci sono restrizioni nel caso si lavori da schermi piccoli in ufficio */
@@ -275,6 +280,13 @@ button {
 #LoginModal {
   border-radius: 1rem;
   border: 1px !important;
+}
+
+#InventoryCard {
+  padding: 0.5rem;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 /* Action Buttons */
@@ -453,4 +465,134 @@ td input {
   width: 25%;
   height: 2.2em;
   margin: 0.1rem;
+}
+
+/* Inventory */
+
+#inventoryHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
+  margin: 0.5rem 1rem;
+  height: max-content !important;
+}
+
+#inventoryBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
+  width: 100%;
+  margin: 0.5rem 1rem;
+  height: max-content !important;
+}
+
+#inventoryFilters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#filtersRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+#inventoryButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0.5rem;
+  width: 20%;
+}
+
+#dropdowns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+}
+
+#costRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+}
+
+#prezzo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100% !important;
+  justify-content: space-evenly;
+  height: 3rem;
+  margin: 1rem 0;
+}
+
+.priceInput {
+  margin: 0;
+  padding: 0;
+}
+
+#prezzo label {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+#prezzo input {
+  margin: 0 1rem;
+  color: #1b57d8;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-left: 0.5rem;
+  width: min-content !important;
+}
+
+#slider-range {
+  width: 100%;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+#brandFilter {
+  display: none;
+}
+
+#stateFilter {
+  display: none;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+#itemTitle {
+  margin: 0 0 2rem 0;
+}
+
+.itemLabel {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 1rem !important;
+}
+
+#itemButton {
+  margin: 1rem !important;
 }
