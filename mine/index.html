@@ -142,7 +142,7 @@
   <!-- Modale Clienti -->
   <div class="modal fade" id="UserAnagraphicModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content modalDiv modal-content2">
+      <div class="modal-content modalDiv">
         <div class=" card-body bg-white text-black" id="UserAnagraphicCard" aria-label="User Anagraphic Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
@@ -155,10 +155,12 @@
               <thead>
                 <tr>
                   <th scope="col">Id</th>
+                  <th scope="col">Username</th>
                   <th scope="col">Nome</th>
                   <th scope="col">Cognome</th>
                   <th scope="col">Email</th>
                   <th scope="col">Telefono</th>
+                  <th scope="col">Punti Fedeltà</th>
                   <th scope="col">Azione</th>
                 </tr>
               </thead>
@@ -289,7 +291,7 @@
   <!-- Modale Noleggi -->
   <div class="modal fade" id="UserRentalsModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content modalDiv modal-content1">
+      <div class="modal-content modalDiv">
         <div class=" card-body bg-white text-black" id="UserRentalsCard" aria-label="User Rentals Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
@@ -307,8 +309,11 @@
                   <th scope="col">Oggetto</th>
                   <th scope="col">Stato</th>
                   <th scope="col">Dal - Al</th>
-                  <th scope="col">Dati</th>
-                  <th scope="col">Spesa Totale(€)</th>
+                  <th scope="col">Restituzione</th>
+                  <th scope="col">Punti Usati(€)</th>
+                  <th scope="col">Spesa Di Base(€)</th>
+                  <th scope="col">Sconto(€)</th>
+                  <th scope="col">Rincaro(€)</th>
                   <th scope="col">Azioni</th>
                 </tr>
               </thead>
@@ -332,39 +337,27 @@
           <div id="bill">
             <h3 class="cardTitle outline">Fattura Noleggio</h3>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Id Noleggio:</p>
-              <p id="rentalId"></p>
+              <p class="bold many">Id Noleggio:<br>Cliente:<br>Oggetto:</p>
+              <p id="rentalIds"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Id Cliente:</p>
-              <p id="billUserId"></p>
+              <p class="bold many">Inizio:<br>Fine:<br>Restituzione:</p>
+              <p id="billDates"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Inizio Noleggio:</p>
-              <p id="billStart"></p>
+              <p class="bold many">Durata Noleggio<br>Giorni Ritardo:<br>Punti Fedeltà:</p>
+              <p id="billDays"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Fine Noleggio:</p>
-              <p id="billEnd"></p>
-            </div>
-            <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Prezzo Base e Giornaliero:</p>
+              <p class="bold many">Costo Base:<br>Sconto:<br>Rincaro:</p>
               <p id="billExpenses"></p>
-            </div>
-            <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Sconto:</p>
-              <p id="billDiscount"></p>
-            </div>
-            <div class="form-outline form-white mb-4 billRow">
-              <p class="bold">Ritardo:</p>
-              <p id="billLateDays"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
               <p class="bold">Costo Totale:</p>
               <p id="billTotalCost"></p>
             </div>
             <div class="form-outline form-white mb-4 billRow">
-              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button" onclick="print()"
+              <button class="btn btn-outline-dark btn-dark px-5 bold" id="billButton" type="button" onclick="print()"
                 aria-label="print-bill">Stampa Fattura</button>
             </div>
           </div>
@@ -387,38 +380,16 @@
               <div id="filtersRow">
                 <div id="dropdowns">
                   <div id="categoryFilter">
-                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
-                      id="categoryDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                      aria-expanded="false">Categoria</button>
-                    <div id="category" class="dropdown-menu" aria-labelledby="categoryDropdownMenuButton">
-                      <a class="dropdown-item" href="#">Low-End</a>
-                      <a class="dropdown-item" href="#">Mid-End</a>
-                      <a class="dropdown-item" href="#">High-End</a>
-                      <a class="dropdown-item" href="#">PC-MasterRace</a>
-                      <a class="dropdown-item" href="#">Crypto-Mining</a>
-                      <a class="dropdown-item" href="#">Postazione Streaming</a>
-                    </div>
+                    <select class="btn btn-dark" id="categoryButton">
+                    </select>
                   </div>
                   <div id="brandFilter">
-                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
-                      id="brandDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                      aria-expanded="false">Marca</button>
-                    <div id="brand" class="dropdown-menu" aria-labelledby="brandDropdownMenuButton">
-                      <a class="dropdown-item" href="#" value="asus">Asus</a>
-                      <a class="dropdown-item" href="#" value="msi">MSI</a>
-                      <a class="dropdown-item" href="#" value="zotac">Zotac</a>
-                    </div>
+                    <select class="btn btn-dark" id="brandButton">
+                    </select>
                   </div>
                   <div id="stateFilter">
-                    <button class="btn btn-dark btn-outline-dark dropdown-toggle" type="button"
-                      id="statusDropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                      aria-expanded="false">Condizione</button>
-                    <div id="state" class="dropdown-menu" aria-labelledby="statusDropdownMenuButton">
-                      <a class="dropdown-item" href="#" value="Mint">Nuova</a>
-                      <a class="dropdown-item" href="#" value="Slightly Damaged">Lievemente Danneggiata</a>
-                      <a class="dropdown-item" href="#" value="Damaged">Pesantemente Danneggiata</a>
-                      <a class="dropdown-item" href="#" value="Broken">Rotta</a>
-                    </div>
+                    <select class="btn btn-dark" id="stateButton">
+                    </select>
                   </div>
                   <button id="resetFiltersButton" type="button" aria-label="Reset filtri" class="btn btn-danger"
                     onclick="resetFilters()">
@@ -455,7 +426,7 @@
   <!-- Modale Oggetti Inventario -->
   <div class="modal fade" id="ItemsModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content modalDiv modal-content1">
+      <div class="modal-content modalDiv">
         <div class=" card-body bg-white text-black" id="ItemsCard" aria-label="Items Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
@@ -468,6 +439,8 @@
               <thead>
                 <tr>
                   <th scope="col">Immagine</th>
+                  <th scope="col">Id</th>
+                  <th scope="col">Admin</th>
                   <th scope="col">Nome</th>
                   <th scope="col">Descrizione</th>
                   <th scope="col">Categoria</th>
@@ -512,24 +485,43 @@
                 <input type="text" class="form-control" id="descriptionInput" placeholder="Inserire Descrizione">
               </div>
               <div class="form-group">
+                <label class="itemLabel" for="adminInput">Responsabile:</label>
+                <select class="form-control" id="adminInput">
+                </select>
+              </div>
+              <div class="form-group">
                 <label class="itemLabel" for="categoryInput">Categoria:</label>
-                <input type="text" class="form-control" id="categoryInput" placeholder="Inserire Categoria">
+                <select class="form-control" id="categoryInput">
+                </select>
               </div>
               <div class="form-group">
                 <label class="itemLabel" for="brandInput">Marca:</label>
-                <input type="text" class="form-control" id="brandInput" placeholder="Inserire Marca">
+                <select class="form-control" id="brandInput">
+                </select>
               </div>
               <div class="form-group">
                 <label class="itemLabel" for="stateInput">Stato:</label>
-                <input type="text" class="form-control" id="stateInput" placeholder="Inserire Stato">
+                <select class="form-control" id="stateInput" placeholder="Inserire Stato">
+                </select>
               </div>
               <div class="form-group">
-                <label class="itemLabel" for="costInput">Costo(€):</label>
-                <input type="number" class="form-control" id="costInput" placeholder="Inserire Costo">
+                <label class="itemLabel" for="baseCostInput">Costo Base(€):</label>
+                <input type="number" class="form-control" id="baseCostInput" placeholder="Inserire Costo Base">
               </div>
               <div class="form-group">
-                <label class="itemLabel" for="noteInput">Sconto(%):</label>
-                <input type="text" class="form-control" id="noteInput" placeholder="Inserire Nota">
+                <label class="itemLabel" for="dailyCostInput">Costo Giornaliero(€):</label>
+                <input type="number" class="form-control" id="dailyCostInput" placeholder="Inserire Costo Giornaliero">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="discountInput">Sconto(%):</label>
+                <input type="number" class="form-control" id="discountInput" placeholder="Inserire Sconto">
+              </div>
+              <div class="form-group">
+                <label class="itemLabel" for="enabledInput">Disponibile:</label>
+                <select class="form-control">
+                  <option value="true">Si</option>
+                  <option value="false">No</option>
+                </select>
               </div>
               <button class="btn btn-dark m-1" type="button" id="itemButton" onclick="loginFromItemRequired()"
                 aria-label="add-item">Aggiungi</button>

@@ -222,6 +222,11 @@ button {
 }
 
 /* Modals */
+.modal-backdrop {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .id-cell {
   width: 8.5rem !important;
 }
@@ -230,25 +235,6 @@ button {
   background-color: transparent !important;
   border: none !important;
   width: max-content;
-}
-
-/* Per i due modali piu larghi ci sono restrizioni nel caso si lavori da schermi piccoli in ufficio */
-@media (max-width: 1674px) {
-  .modal-content1 {
-    /* overflow: scroll !important; */
-    position: relative !important;
-    overflow: auto !important;
-    height: 100% !important;
-  }
-}
-
-@media (max-width: 1400px) {
-  .modal-content2 {
-    /* overflow: scroll !important; */
-    position: relative !important;
-    overflow: auto !important;
-    height: 100% !important;
-  }
 }
 
 .closeButton {
@@ -307,7 +293,7 @@ button {
 }
 
 .modalActions button {
-  width: 40%;
+  width: 2.5rem;
   height: 2.2em;
   margin: 0.1rem;
 }
@@ -455,7 +441,7 @@ td input {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin: 0.5rem 1rem;
+  margin: 0.25rem 1rem;
 }
 
 .billButton {
@@ -467,8 +453,19 @@ td input {
   margin: 0.1rem;
 }
 
-/* Inventory */
+.many {
+  text-align: left;
+}
 
+#billButton {
+  width: 100%;
+}
+
+#rentalIds {
+  text-align: right;
+}
+
+/* Inventory */
 #inventoryHeader {
   display: flex;
   flex-direction: column;
@@ -595,4 +592,24 @@ td input {
 
 #itemButton {
   margin: 1rem !important;
+}
+
+#rentalInputActions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#rentalInputActions button {
+  height: 100%;
+  margin: 0.1rem;
+}
+
+#createRentalInputButton {
+  display: none;
+}
+
+.medium {
+  width: min-content;
 }
