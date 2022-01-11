@@ -1,3 +1,5 @@
+/* Variabili Globali */
+
 let currentNotationIndex = -1;
 let currentItemIndex = -1;
 let allItems = [];
@@ -6,7 +8,7 @@ let surchargeTax = 1.5;
 let minCost = 0;
 let maxCost = 1000;
 
-const allStates = ["Completed", "Finished", "Ongoing", "Booked"];
+const allStates = ["Booked", "Ongoing", "Finished", "Completed"];
 const itemStates = {
   Mint: "Nuovo",
   SlightlyDamaged: "Qualche Imperfezione",
@@ -19,10 +21,10 @@ const timeoutByState = {
   Finished: "50",
   Completed: "0",
 };
-
-function toggleZoomScreen() {
-  document.body.style.zoom = "80%";
-}
+const enableStates = {
+  true: "Sì",
+  false: "No",
+};
 
 /* On Load */
 window.onload = (event) => {
@@ -39,6 +41,11 @@ window.onload = (event) => {
 /* Misc */
 function home() {
   location.reload();
+}
+
+// Needed to be able to see the full modal
+function toggleZoomScreen() {
+  document.body.style.zoom = "80%";
 }
 
 /* Tokens Related*/
@@ -128,18 +135,18 @@ function logout() {
     data: {
       refreshToken: getRefreshToken(),
     },
-    success: function (d) {
+    success: function (data) {
       deleteTokens();
       console.log("Logout Eseguito");
       location.reload();
     },
-    error: function (d) {
-      console.log("Errore durante il logout");
+    error: function (err) {
+      alert("Errore durante il logout");
+      console.log(err.responseText);
     },
   });
 }
 
-/* Login Privileges */
 function loggedPrivileges() {
   $("#home").text(getLoggedUser());
   $("#loginButton").hide();
@@ -158,12 +165,12 @@ function allowClients() {
 
 function allowRentals() {
   $("#rentalsCaption").text("Noleggi Attivi");
-  $("#Rentals").attr("onclick", "userRentals(true);");
+  $("#Rentals").attr("onclick", "showRentals(fromUser=true);");
 }
 
 function allowOldRentals() {
   $("#rentalsCaption").text("Noleggi Conclusi");
-  $("#OldRentals").attr("onclick", "userRentals(false);");
+  $("#OldRentals").attr("onclick", "showRentals(fromUser=false);");
 }
 
 function allowBrandFilter() {
@@ -184,11 +191,12 @@ function userAnagraphic() {
       Authorization: "Bearer " + getToken(),
     },
     data: {
-      role: "user",
-      sortBy: "name:asc",
+      sortBy: "username:asc",
     },
     success: function (res) {
-      users = res.results;
+      users = res.results.filter(
+        (user) => user.role == "user" || user.id == getLoggedAdminId()
+      );
       let tbody = $("#ADBody");
       tbody.empty();
       for (let u of users) {
@@ -203,7 +211,7 @@ function userAnagraphic() {
         let tr = document.createElement("tr");
         tr.innerHTML = `
         <td class="ClientData">
-          <input type="text" class="form-control id-cell" id="client${index}Id" value="${id}">
+          <input type="text" class="form-control id-cell" id="client${index}Id" value="${id}" disabled>
         </td>
         <td class="ClientData">
           <input type="text" class="form-control" id="client${index}Username" value="${username}">
@@ -241,6 +249,7 @@ function userAnagraphic() {
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
+      console.log(res.responseText);
     },
   });
   $("#UserAnagraphicModal").modal("show");
@@ -273,73 +282,86 @@ function editUser(index) {
     },
     error: function (res) {
       alert("Errore durante la modifica dell'utente");
+      console.log(res.responseText);
     },
   });
 }
 
 function removeUser(index) {
   let id = $(`#client${index}Id`).val().trim();
-  console.log("Procedo a rimuovere l'utente con id: " + id);
-  filters = {
-    user: id,
-    state: "Ongoing",
-  };
-  $.ajax({
-    url: localhost + "/v1/rentals",
-    type: "GET",
-    headers: {
-      Authorization: "Bearer " + getToken(),
-    },
-    data: filters,
-    success: function (res) {
-      console.log("Ci sono " + res.results.length + " noleggi attivi");
-      ongoingLength = res.results.length;
-      if (ongoingLength == 0) {
-        rentals = res.results;
-        filters.state = "Booked";
-        $.ajax({
-          url: localhost + "/v1/rentals",
-          type: "GET",
-          headers: {
-            Authorization: "Bearer " + getToken(),
-          },
-          data: filters,
-          success: function (res) {
-            console.log("Ci sono " + res.results.length + " noleggi prenotati");
-            bookedLength = res.results.length;
-            rentals = res.results;
-            if (bookedLength == 0) {
-              $.ajax({
-                url: localhost + `/v1/users/${id}`,
-                type: "DELETE",
-                headers: {
-                  Authorization: "Bearer " + getToken(),
-                },
-                success: function (res) {
-                  location.reload();
-                },
-                error: function (res) {
-                  alert("Errore durante la rimozione dell'utente");
-                },
-              });
-            } else {
-              alert(
-                "Non è possibile eliminare l'utente, ci sono noleggi prenotati"
+  if (id != getLoggedAdminId()) {
+    console.log("Procedo a rimuovere l'utente con id: " + id);
+    filters = {
+      user: id,
+      state: "Ongoing",
+    };
+    $.ajax({
+      url: localhost + "/v1/rentals",
+      type: "GET",
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
+      data: filters,
+      success: function (res) {
+        console.log("Ci sono " + res.results.length + " noleggi attivi");
+        ongoingLength = res.results.length;
+        if (ongoingLength == 0) {
+          rentals = res.results;
+          filters.state = "Booked";
+          $.ajax({
+            url: localhost + "/v1/rentals",
+            type: "GET",
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            },
+            data: filters,
+            success: function (res) {
+              console.log(
+                "Ci sono " + res.results.length + " noleggi prenotati"
               );
-            }
-          },
-          error: function (res) {
-            alert("Errore durante la ricerca dei noleggi prenotati");
-          },
-        });
-      } else {
-        alert("Non è possibile eliminare l'utente, ci sono noleggi in corso");
-      }
-    },
-    error: function (res) {
-      alert("Errore durante la ricerca dei noleggi in corso");
-    },
-  });
+              bookedLength = res.results.length;
+              rentals = res.results;
+              if (bookedLength == 0) {
+                $.ajax({
+                  url: localhost + `/v1/users/${id}`,
+                  type: "DELETE",
+                  headers: {
+                    Authorization: "Bearer " + getToken(),
+                  },
+                  success: function (res) {
+                    location.reload();
+                  },
+                  error: function (res) {
+                    alert("Errore durante la rimozione dell'utente");
+                    console.log(res.responseText);
+                  },
+                });
+              } else {
+                alert(
+                  "Non è possibile eliminare l'utente, ci sono noleggi prenotati"
+                );
+                location.reload();
+              }
+            },
+            error: function (res) {
+              alert("Errore durante la ricerca dei noleggi prenotati");
+              console.log(res.responseText);
+            },
+          });
+        } else {
+          alert("Non è possibile eliminare l'utente, ci sono noleggi in corso");
+          location.reload();
+        }
+      },
+      error: function (res) {
+        alert("Errore durante la ricerca dei noleggi in corso");
+        console.log(res.responseText);
+      },
+    });
+  } else {
+    alert("Non è possibile eliminare un admin");
+    location.reload();
+  }
 }
 
 /* User Annotations */
@@ -375,7 +397,8 @@ function addUserAnnotations() {
       location.reload();
     },
     error: function (res) {
-      console.log("Errore durante l'aggiunta delle annotazioni");
+      alert("Errore durante l'aggiunta delle annotazioni");
+      console.log(res.responseText);
     },
   });
 }
@@ -405,6 +428,7 @@ function showUserAnnotations(index) {
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
+      console.log(res.responseText);
     },
   });
 }
@@ -443,6 +467,7 @@ function addRentalAnnotations() {
     },
     error: function (res) {
       alert("Errore durante l'aggiunta delle annotazioni");
+      console.log(res.responseText);
     },
   });
 }
@@ -472,44 +497,12 @@ function showRentalAnnotations(index) {
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
+      console.log(res.responseText);
     },
   });
 }
 
-/* User Rentals */
-
-function showUserRentals(index) {
-  console.log("Mostro i noleggi dell'utente");
-  let id = $(`#client${index}Id`).val().trim();
-  $("#UserAnagraphicModal").modal("hide");
-  $("#ShowRentalsModal").modal("show");
-  userRentals(true, id);
-}
-
-function insertRentalActions(index, state) {
-  if (state == "Completed") {
-    $("#rentalEdit" + index).hide();
-    $(`#rental${index}State`).prop("disabled", true);
-    $(`#rental${index}ReturnDate`).prop("disabled", true);
-    $(`#saveRentalInfos${index}Button`).hide();
-    $(`#createRental${index}Button`).hide();
-  } else {
-    $("#rentalBill" + index).hide();
-    $("#rentalAddNotes" + index).hide();
-    $("#rentalGetNotes" + index).hide();
-    $(`#createRental${index}Button`).hide();
-  }
-
-  if (state != "Booked") {
-    $("#rentalRemove" + index).hide();
-  } else {
-    $(`#rental${index}UserId`).prop("disabled", false);
-    $(`#rental${index}AdminId`).prop("disabled", false);
-    $(`#rental${index}Item`).prop("disabled", false);
-    $(`#rental${index}Dates`).prop("disabled", false);
-  }
-}
-
+/* Helpful functions for the rentals */
 function getDaysDistance(start, end) {
   return Math.ceil((new Date(end) - new Date(start)) / (1000 * 3600 * 24));
 }
@@ -539,6 +532,7 @@ function elaborateTotalCost(baseCost, discount, surcharge) {
   return total >= 0 ? total : 0;
 }
 
+/* Functions to insert select values */
 function appendCorrectUsers(users, userId) {
   html = `<option value=""></option>`;
   for (let user of users) {
@@ -591,6 +585,18 @@ function appendCorrectItemState(stateId) {
   html = `<option disabled selected>Stato</option>`;
   for (const [key, value] of Object.entries(itemStates)) {
     if (key == stateId) {
+      html += `<option value="${key}" selected>${value}</option>`;
+    } else {
+      html += `<option value="${key}">${value}</option>`;
+    }
+  }
+  return html;
+}
+
+function appendCorrectEnableState(enabledId) {
+  html = `<option disabled selected>Disponibile?</option>`;
+  for (const [key, value] of Object.entries(enableStates)) {
+    if (String(key) == String(enabledId)) {
       html += `<option value="${key}" selected>${value}</option>`;
     } else {
       html += `<option value="${key}">${value}</option>`;
@@ -658,8 +664,12 @@ function appendAllItemAdmin(id) {
     headers: {
       Authorization: "Bearer " + getToken(),
     },
+    data: {
+      role: "manager",
+      sortBy: "username:asc",
+    },
     success: function (res) {
-      admins = res.results.filter((user) => user.role == "manager");
+      admins = res.results;
       html = `<option disabled selected>Responsabile</option>`;
       for (let admin of admins) {
         html += `<option value="${admin.id}">${admin.username}</option>`;
@@ -670,6 +680,46 @@ function appendAllItemAdmin(id) {
       alert("Errore durante il recupero delle marche");
     },
   });
+}
+
+/* User Rentals */
+function showUserRentals(index) {
+  console.log("Mostro i noleggi dell'utente");
+  let id = $(`#client${index}Id`).val().trim();
+  $("#UserAnagraphicModal").modal("hide");
+  $("#ShowRentalsModal").modal("show");
+  showRentals(true, id);
+}
+
+function showItemRentals(index) {
+  console.log("Mostro i noleggi dell'oggetto");
+  let id = $(`#item${index}Id`).val().trim();
+  $("#ItemsModal").modal("hide");
+  $("#ShowRentalsModal").modal("show");
+  showRentals(null, null, true, id);
+}
+
+function insertRentalActions(index, state) {
+  if (state == "Completed") {
+    $("#rentalEdit" + index).hide();
+    $(`#rental${index}State`).prop("disabled", true);
+    $(`#rental${index}ReturnDate`).prop("disabled", true);
+    $(`#saveRentalInfos${index}Button`).hide();
+    $(`#createRental${index}Button`).hide();
+  } else {
+    $("#rentalBill" + index).hide();
+    $("#rentalAddNotes" + index).hide();
+    $("#rentalGetNotes" + index).hide();
+    $(`#createRental${index}Button`).hide();
+  }
+
+  if (state != "Booked") {
+    $("#rentalRemove" + index).hide();
+  } else {
+    $(`#rental${index}AdminId`).prop("disabled", false);
+    $(`#rental${index}Item`).prop("disabled", false);
+    $(`#rental${index}Dates`).prop("disabled", false);
+  }
 }
 
 function editRowRental(index) {
@@ -714,19 +764,35 @@ function editRowRental(index) {
   $(`#createRental${key}Button`).show();
 }
 
-function userRentals(old, userId) {
+function elaborateStates(fromUser, userId, fromItem, itemId) {
+  if (fromUser || fromItem) {
+    states =
+      userId || itemId
+        ? ["Completed", "Finished", "Ongoing", "Booked"]
+        : ["Finished", "Ongoing", "Booked"];
+  } else states = ["Completed"];
+  return states;
+}
+
+function showRentals(fromUser, userId, fromItem, itemId) {
   let index = 0;
   let tbody = $("#RentalsBody").empty();
+  console.log("Recupero gli utenti");
   $.ajax({
     url: localhost + "/v1/users",
     type: "GET",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
-    success: function (allUsers) {
-      console.log("Recupero gli utenti");
-      admins = allUsers.results.filter((user) => user.role == "manager");
-      users = allUsers.results.filter((user) => user.role == "user");
+    data: {
+      sortBy: "username:asc",
+    },
+    success: function (res) {
+      admins = res.results.filter((user) => user.role == "manager");
+      users = res.results.filter(
+        (user) => user.role == "user" || user.id == getLoggedAdminId()
+      );
+      console.log("Recupero gli oggetti");
       $.ajax({
         url: localhost + "/v1/items",
         type: "GET",
@@ -734,15 +800,15 @@ function userRentals(old, userId) {
           Authorization: "Bearer " + getToken(),
         },
         success: function (items) {
-          if (old) {
-            states = userId
-              ? ["Completed", "Finished", "Ongoing", "Booked"]
-              : ["Finished", "Ongoing", "Booked"];
-            tbody.append(createNewRentalFromRow(userId, items));
-          } else states = ["Completed"];
-          filters = userId
-            ? { sortBy: "from:desc", user: userId }
-            : { sortBy: "from:desc" };
+          states = elaborateStates(fromUser, userId, fromItem, itemId);
+          if (states != ["Completed"])
+            tbody.append(createNewRentalFromRow(userId, items, itemId));
+          filters = {
+            sortBy: "from:desc",
+          };
+          filters = userId ? { ...filters, user: userId } : filters;
+          filters = itemId ? { ...filters, item: itemId } : filters;
+          console.log("Recupero i noleggi");
           for (let state of states) {
             setTimeout(function () {
               filters.state = state;
@@ -754,13 +820,12 @@ function userRentals(old, userId) {
                 },
                 data: filters,
                 success: function (res) {
-                  console.log("Recuperati i noleggi");
                   rentals = res.results;
                   for (let r of rentals) {
                     let rentalId = r.id;
-                    let rentalUser = r.user.id;
-                    let rentalAdmin = r.resp.id;
-                    let rentalItem = r.item.id;
+                    let rentalUser = r.user != null ? r.user.id : "";
+                    let rentalAdmin = r.resp != null ? r.resp.id : "";
+                    let rentalItem = r.item != null ? r.item.id : "";
                     let state = r.state;
                     let start = r.from.substring(0, 10);
                     let end = r.to.substring(0, 10);
@@ -831,6 +896,7 @@ function userRentals(old, userId) {
                 },
                 error: function (res) {
                   alert("Errore durante il recupero dei noleggi");
+                  location.reload();
                 },
               });
             }, timeoutByState[state]);
@@ -838,18 +904,19 @@ function userRentals(old, userId) {
         },
         error: function (res) {
           alert("Errore durante il recupero degli oggetti");
+          location.reload();
         },
       });
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
+      location.reload();
     },
   });
   $("#UserRentalsModal").modal("show");
 }
 
-function createNewRentalFromRow(userId, items) {
-  let id = userId || "";
+function createNewRentalFromRow(userId, items, itemId) {
   allItems = items.results;
   let tr = document.createElement("tr");
   tr.innerHTML = `
@@ -866,7 +933,7 @@ function createNewRentalFromRow(userId, items) {
     </td>
     <td class="RentalData">
       <select class="form-control id-cell" id="rentalInputItem" value="">
-        ${appendCorrectItem(items.results)}
+        ${appendCorrectItem(allItems, itemId)}
       </select>
     </td>
     <td class="RentalData">
@@ -932,11 +999,11 @@ function postRentalFromRow() {
       price: baseCost,
     },
     success: function (res) {
-      console.log("Noleggio creato con successo");
       location.reload();
     },
     error: function (res) {
       alert("Errore durante l'aggiunta del noleggio");
+      console.log(res.responseText);
     },
   });
 }
@@ -976,10 +1043,8 @@ function getRentalBill(index) {
 function checkAdmin(adminId) {
   if (getLoggedAdminId() == adminId || getLoggedAdminId() == "") {
     return true;
-  } else {
-    alert("Non sei autorizzato a modificare questo noleggio");
-    return false;
   }
+  return false;
 }
 
 function editRental(index) {
@@ -1020,8 +1085,11 @@ function editRental(index) {
       },
       error: function (res) {
         alert("Errore durante la modifica dell'utente");
+        console.log(res.responseText);
       },
     });
+  } else {
+    alert("Non sei autorizzato a modificare questo noleggio");
   }
 }
 
@@ -1040,11 +1108,13 @@ function removeRental(index) {
       },
       error: function (res) {
         alert("Errore durante la ricerca dei noleggi in corso");
+        console.log(res.responseText);
       },
     });
   }
 }
 
+/* Inventory */
 function showInventory() {
   appendAllItemCategories("categoryButton");
   appendAllItemBrands("brandButton");
@@ -1064,19 +1134,8 @@ function showInventory() {
         start: document.getElementById("minAmount").value,
         end: document.getElementById("maxAmount").value,
       };
-      // $.ajax({
-      //   url: "/db/filtersCataLOG/",
-      //   type: "POST",
-      //   data: { filters, filterValues },
-      //   dataType: "json",
-      //   contentType: "application/x-www-form-urlencoded",
-      //   success: function (data) {
-      //     cards(data);
-      //   },
-      // });
     },
   });
-
   $("#minAmount").val($("#slider-range").slider("values", 0));
   $("#maxAmount").val($("#slider-range").slider("values", 1));
 }
@@ -1104,7 +1163,6 @@ function addItem() {
 }
 
 function resetFilters() {
-  console.log("Resetto i filtri");
   $(`#categoryButton`).val("Categoria");
   $(`#brandButton`).val("Marca");
   $(`#stateButton`).val("Stato");
@@ -1124,22 +1182,25 @@ function searchItems() {
   let filters = {
     priceFrom: start,
     priceTo: end,
-    sortBy: "resp:asc",
+    sortBy: "id:asc",
   };
   filters = category != "" ? { ...filters, category: category } : filters;
   filters = brand != "" ? { ...filters, brand: brand } : filters;
   filters = state != "" ? { ...filters, state: state } : filters;
-  console.log(filters);
-
+  console.log("Recupero gli utenti");
   $.ajax({
     url: localhost + "/v1/users",
     type: "GET",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
+    data: {
+      role: "manager",
+      sortBy: "username:asc",
+    },
     success: function (users) {
-      console.log("Recuperati gli utenti");
-      admins = users.results.filter((user) => user.role == "manager");
+      console.log("Recupero gli items");
+      admins = users.results;
       $.ajax({
         url: localhost + "/v1/items",
         type: "GET",
@@ -1149,7 +1210,6 @@ function searchItems() {
           Authorization: "Bearer " + getToken(),
         },
         success: function (res) {
-          console.log("Recuperati gli oggetti");
           items = res.results;
           for (let i of items) {
             index = items.indexOf(i);
@@ -1164,13 +1224,14 @@ function searchItems() {
             let baseCost = i.basePrice;
             let dailyCost = i.dailyPrice;
             let discount = i.discount;
+            let enabled = i.enabled;
             let tr = document.createElement("tr");
             tr.innerHTML = `
                       <td class="RentalData">
-                        <input type="file" class="form-control" id="item${index}Image" aria-describedby="Image" placeholder="Inserire Immagine" value=${image}>
+                        <input type="file" class="form-control image-cell" id="item${index}Image" aria-describedby="Image" placeholder="Inserire Immagine" value=${image}>
                       </td>
                       <td class="RentalData">
-                        <input type="text" class="form-control id-cell" id="item${index}Id" value="${itemId}" >
+                        <input type="text" class="form-control id-cell" id="item${index}Id" value="${itemId}" disabled>
                        </td>
                       <td class="RentalData">
                         <select class="form-control id-cell" id="item${index}Admin" >
@@ -1207,11 +1268,16 @@ function searchItems() {
                       <td class="RentalData">
                         <input type="text" class="form-control id-cell" id="item${index}Discount" value="${discount}" >
                       </td>
+                      <td class="RentalData">
+                        <select class="form-control id-cell" id="item${index}State">
+                          ${appendCorrectEnableState(enabled)}
+                        </select>
+                      </td>
                       <td class="RentalData actionBar">
                         <div id="rental${index}Actions">
                           <div class="modalActions">
-                            <button class="btn btn-primary bi bi-bag-check" id="saveRentalInfos${index}Button" onclick="editRowRental(${index})"></button>
-                            <button class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editRental(${index})"></button>
+                            <button class="btn btn-primary bi bi-bag-check" id="saveRentalInfos${index}Button" onclick="showItemRentals(${index})"></button>
+                            <button class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editItem(${index})"></button>
                             <button class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeItem(${index})"></button>
                           </div>
                         </div>
@@ -1220,14 +1286,16 @@ function searchItems() {
           }
         },
         error: function (err) {
-          console.log("Errore: " + err);
+          alert("Errore nel recupero degli items");
+          console.log(err.responseText);
         },
       });
       $("#InventoryModal").modal("hide");
       $("#ItemsModal").modal("show");
     },
     error: function (err) {
-      console.log("Errore: " + err);
+      console.log("Errore nel recupero degli utenti");
+      console.log(err.responseText);
     },
   });
 }
@@ -1246,61 +1314,124 @@ function insertNewItem() {
     discount: $("#discountInput").val(),
     enabled: $("#enabledInput").val(),
   };
+  console.log("Recupero gli items");
   $.ajax({
     url: localhost + "/v1/items",
     type: "POST",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
     data: item,
     success: function (data) {
       $("#ItemsModal").modal("hide");
       location.reload();
     },
     error: function (err) {
-      alert("Errore: " + err);
+      alert("Errore nell'inserimento dell'item");
+      console.log(err.responseText);
     },
   });
 }
 
+function editItem(index) {
+  if (checkAdmin($("#item" + index + "Admin").val())) {
+    let id = $("#item" + index + "Id").val();
+    let item = {
+      image: $("#item" + index + "Image").val(),
+      name: $("#item" + index + "Name").val(),
+      description: $("#item" + index + "Description").val(),
+      category: $("#item" + index + "Category").val(),
+      resp: $("#item" + index + "Admin").val(),
+      brand: $("#item" + index + "Brand").val(),
+      state: $("#item" + index + "State").val(),
+      basePrice: $("#item" + index + "Costs")
+        .val()
+        .split("|")[0]
+        .trim(),
+      dailyPrice: $("#item" + index + "Costs")
+        .val()
+        .split("|")[1]
+        .trim(),
+      discount: $("#item" + index + "Discount").val(),
+      enabled: $("#item" + index + "State").val() === "true",
+    };
+    console.log(item.enabled);
+    console.log("Aggiorno l'item");
+    $.ajax({
+      url: localhost + "/v1/items/" + id,
+      type: "PATCH",
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
+      data: item,
+      success: function (data) {
+        $("#ItemsModal").modal("hide");
+        location.reload();
+      },
+      error: function (err) {
+        alert("Errore nella modifica dell'item");
+        console.log(err.responseText);
+      },
+    });
+  } else {
+    alert("Non hai i permessi per modificare questo elemento");
+    location.reload();
+  }
+}
+
 function removeItem(index) {
-  let itemId = $("#item" + index + "Id").val();
-  $.ajax({
-    url: localhost + "/v1/rentals",
-    type: "GET",
-    data: { item: itemId },
-    success: function (data) {
-      if (data.results.length == 0) {
-        $.ajax({
-          url: localhost + "/v1/items/" + itemId,
-          type: "DELETE",
-          success: function (data) {
-            $("#ItemsModal").modal("hide");
-            location.reload();
-          },
-          error: function (err) {
-            alert("Errore: " + err);
-          },
-        });
-      } else {
-        $.ajax({
-          url: localhost + "/v1/items/" + itemId,
-          type: "PATCH",
-          data: { enabled: false },
-          success: function (data) {
-            $("#ItemsModal").modal("hide");
-            console.log(
-              "Non puoi eliminare un oggetto che è o è stato in prestito: è stato reso indisponibile"
-            );
-            location.reload();
-          },
-          error: function (err) {
-            alert("Errore: " + err);
-          },
-        });
-      }
-    },
-    error: function (err) {
-      alert("Errore: " + err);
-    },
-  });
+  if (checkAdmin($("#item" + index + "Admin").val())) {
+    let itemId = $("#item" + index + "Id").val();
+    console.log("Recupero i noleggi dell'item");
+    $.ajax({
+      url: localhost + "/v1/rentals/",
+      type: "GET",
+      data: { item: itemId },
+      success: function (data) {
+        if (data.results.length == 0) {
+          $.ajax({
+            url: localhost + "/v1/items/" + itemId,
+            type: "DELETE",
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            },
+            success: function (data) {
+              $("#ItemsModal").modal("hide");
+              location.reload();
+            },
+            error: function (err) {
+              alert("Errore nella rimozione dell'item");
+            },
+          });
+        } else {
+          $.ajax({
+            url: localhost + "/v1/items/" + itemId,
+            type: "PATCH",
+            headers: {
+              Authorization: "Bearer " + getToken(),
+            },
+            data: { enabled: false },
+            success: function (data) {
+              $("#ItemsModal").modal("hide");
+              alert(
+                "Non puoi eliminare un oggetto che è o è stato in prestito: è stato reso indisponibile"
+              );
+              location.reload();
+            },
+            error: function (err) {
+              alert("Errore nell'editing dell'item");
+            },
+          });
+        }
+      },
+      error: function (err) {
+        alert("Errore nella recupero dei noleggi");
+      },
+    });
+  } else {
+    alert("Non hai i permessi per modificare questo elemento");
+    location.reload();
+  }
 }
 
 function showAvaiability(index) {

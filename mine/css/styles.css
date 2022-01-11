@@ -53,6 +53,15 @@ html {
   margin: 0 !important;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
 /* Body */
 
 main {
@@ -571,14 +580,7 @@ td input {
   display: none;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0.5rem 1rem;
-}
+/* Items */
 
 #itemTitle {
   margin: 0 0 2rem 0;
@@ -610,6 +612,6 @@ td input {
   display: none;
 }
 
-.medium {
-  width: min-content;
+.image-cell {
+  width: 14.7rem !important;
 }
