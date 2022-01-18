@@ -62,6 +62,10 @@ html {
   padding: 0.5rem 1rem;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* Body */
 
 main {
@@ -614,4 +618,10 @@ td input {
 
 .image-cell {
   width: 14.7rem !important;
+}
+
+.itemImage {
+  width: 12rem !important;
+  height: auto !important;
+  border-radius: 1rem !important;
 }

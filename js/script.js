@@ -8,7 +8,7 @@ let surchargeTax = 1.5;
 let minCost = 0;
 let maxCost = 1000;
 
-const allStates = ["Booked", "Ongoing", "Finished", "Completed"];
+const allStates = ["Booked", "Accepted", "Ongoing", "Expired", "Returned"];
 const itemStates = {
   Mint: "Nuovo",
   SlightlyDamaged: "Qualche Imperfezione",
@@ -17,9 +17,10 @@ const itemStates = {
 };
 const timeoutByState = {
   Booked: "200",
+  Accepted: "150",
   Ongoing: "100",
-  Finished: "50",
-  Completed: "0",
+  Expired: "50",
+  Returned: "0",
 };
 const enableStates = {
   true: "Sì",
@@ -69,12 +70,12 @@ function getLoggedAdminId() {
   return localStorage.getItem("adminId");
 }
 
-function saveToken(response) {
-  token = response.tokens.access.token;
-  expires = response.tokens.access.expires;
-  refreshToken = response.tokens.refresh.token;
-  user = response.user.username;
-  adminId = response.user.id;
+function saveTokens(response) {
+  let token = response.tokens.access.token;
+  let expires = response.tokens.access.expires;
+  let refreshToken = response.tokens.refresh.token;
+  let user = response.user.username;
+  let adminId = response.user.id;
   localStorage.setItem("token", token);
   localStorage.setItem("expires", expires);
   localStorage.setItem("refreshToken", refreshToken);
@@ -114,12 +115,16 @@ function login() {
     data: credentials,
     dataType: "json",
     success: function (data) {
-      saveToken(data);
+      console.log(data.user.role);
+      if (data.user.role == "user") {
+        $("#LoginModal").modal("hide");
+        alert("Non sei autorizzato ad accedere a questa pagina");
+      } else saveTokens(data);
       location.reload();
     },
     error: function (data) {
       $("#loginForm").trigger("reset");
-      $("#loginCaption").text("Email o password errati");
+      $("#loginCaption").text("Email o password errata");
     },
   });
 }
@@ -210,7 +215,7 @@ function userAnagraphic() {
         let loyalties = u.loyalty;
         let tr = document.createElement("tr");
         tr.innerHTML = `
-        <td class="ClientData">
+        <td class="ClientData hidden">
           <input type="text" class="form-control id-cell" id="client${index}Id" value="${id}" disabled>
         </td>
         <td class="ClientData">
@@ -534,7 +539,7 @@ function elaborateTotalCost(baseCost, discount, surcharge) {
 
 /* Functions to insert select values */
 function appendCorrectUsers(users, userId) {
-  html = `<option value=""></option>`;
+  html = `<option value="" selected disabled></option>`;
   for (let user of users) {
     if (user.id == userId) {
       html += `<option value="${user.id}" selected>${user.username}</option>`;
@@ -546,7 +551,7 @@ function appendCorrectUsers(users, userId) {
 }
 
 function appendCorrectAdmin(admins, adminId) {
-  html = `<option value=""></option>`;
+  html = `<option value="" selected disabled></option>`;
   for (let admin of admins) {
     if (admin.id == adminId) {
       html += `<option value="${admin.id}" selected>${admin.username}</option>`;
@@ -558,7 +563,7 @@ function appendCorrectAdmin(admins, adminId) {
 }
 
 function appendCorrectItem(items, itemId) {
-  html = `<option value=""></option>`;
+  html = `<option value="" selected disabled></option>`;
   for (let item of items) {
     if (item.id == itemId) {
       html += `<option value="${item.id}" selected>${item.name}</option>`;
@@ -665,7 +670,7 @@ function appendAllItemAdmin(id) {
       Authorization: "Bearer " + getToken(),
     },
     data: {
-      role: "manager",
+      role: "backoffice",
       sortBy: "username:asc",
     },
     success: function (res) {
@@ -700,7 +705,7 @@ function showItemRentals(index) {
 }
 
 function insertRentalActions(index, state) {
-  if (state == "Completed") {
+  if (state == "Returned") {
     $("#rentalEdit" + index).hide();
     $(`#rental${index}State`).prop("disabled", true);
     $(`#rental${index}ReturnDate`).prop("disabled", true);
@@ -768,9 +773,9 @@ function elaborateStates(fromUser, userId, fromItem, itemId) {
   if (fromUser || fromItem) {
     states =
       userId || itemId
-        ? ["Completed", "Finished", "Ongoing", "Booked"]
-        : ["Finished", "Ongoing", "Booked"];
-  } else states = ["Completed"];
+        ? ["Returned", "Expired", "Ongoing", "Accepted", "Booked"]
+        : ["Expired", "Ongoing", "Accepted", "Booked"];
+  } else states = ["Returned"];
   return states;
 }
 
@@ -788,7 +793,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
       sortBy: "username:asc",
     },
     success: function (res) {
-      admins = res.results.filter((user) => user.role == "manager");
+      admins = res.results.filter((user) => user.role == "backoffice");
       users = res.results.filter(
         (user) => user.role == "user" || user.id == getLoggedAdminId()
       );
@@ -837,7 +842,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                     let tr = document.createElement("tr");
                     tr.className = `${state}Row`;
                     tr.innerHTML = `
-                      <td class="RentalData">
+                      <td class="RentalData hidden">
                         <input type="text" class="form-control id-cell" id="rental${index}Id" value="${rentalId}" disabled>
                       </td>
                       <td class="RentalData">
@@ -846,7 +851,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                         </select>
                       </td>
                       <td class="RentalData">
-                        <select class="form-control id-cell" id="rental${index}Admin" disabled>
+                        <select class="form-control id-cell" id="rental${index}Admin">
                           ${appendCorrectAdmin(admins, rentalAdmin)}
                         </select>
                       </td>
@@ -864,7 +869,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                         <input type="text" class="form-control" id="rental${index}Dates" value="${start} | ${end}" disabled>
                       </td>
                       <td class="RentalData">
-                        <input type="text" class="form-control id-cell" id="rental${index}ReturnDate" value="${returnDate}">
+                        <input type="date" class="form-control" id="rental${index}ReturnDate" value="${returnDate}">
                       </td>
                       <td class="RentalData">
                         <input type="text" class="form-control id-cell" id="rental${index}Points" value="${loyalties}" disabled>
@@ -920,7 +925,7 @@ function createNewRentalFromRow(userId, items, itemId) {
   allItems = items.results;
   let tr = document.createElement("tr");
   tr.innerHTML = `
-    <td class="RentalData">
+    <td class="RentalData hidden">
       <input type="text" class="form-control id-cell" id="rentalInputId" value="Auto-Generato" disabled>
     </td>
     <td class="RentalData">
@@ -945,7 +950,7 @@ function createNewRentalFromRow(userId, items, itemId) {
       <input type="text" class="form-control" id="rentalInputDates" value="">
     </td>
     <td class="RentalData">
-      <input type="text" class="form-control id-cell" id="rentalInputReturnDate">
+      <input type="date" class="form-control" id="rentalInputReturnDate">
     </td>
     <td class="RentalData">
       <input type="text" class="form-control id-cell" id="rentalInputPoints">
@@ -1172,6 +1177,11 @@ function resetFilters() {
   $("#slider-range").slider("values", 1, maxCost);
 }
 
+function changeIcon() {
+  let icon = $(`#item${index}Image`).val().trim();
+  $(`#item${index}Icon`).attr("src", icon);
+}
+
 function searchItems() {
   let tbody = $("#ItemsBody").empty();
   let category = $(`#categoryButton`).val() || "";
@@ -1195,7 +1205,7 @@ function searchItems() {
       Authorization: "Bearer " + getToken(),
     },
     data: {
-      role: "manager",
+      role: "backoffice",
       sortBy: "username:asc",
     },
     success: function (users) {
@@ -1214,7 +1224,6 @@ function searchItems() {
           for (let i of items) {
             index = items.indexOf(i);
             let itemId = i.id;
-            let itemResp = i.resp;
             let name = i.name;
             let image = i.image;
             let description = i.description;
@@ -1228,16 +1237,14 @@ function searchItems() {
             let tr = document.createElement("tr");
             tr.innerHTML = `
                       <td class="RentalData">
-                        <input type="file" class="form-control image-cell" id="item${index}Image" aria-describedby="Image" placeholder="Inserire Immagine" value=${image}>
+                        <img src="${image}" class="itemImage image-cell" id="item${index}Icon" alt="Icona Oggetto">
                       </td>
                       <td class="RentalData">
-                        <input type="text" class="form-control id-cell" id="item${index}Id" value="${itemId}" disabled>
+                        <input type="text" class="form-control id-cell" id="item${index}Image" onchange="changeIcon(${index})" aria-describedby="Image" placeholder="Inserire Link Immagine" value=${image}>
+                      </td>
+                      <td class="RentalData hidden">
+                        <input type="text" class="form-control id-cell" id="item${index}Id" value="${itemId}">
                        </td>
-                      <td class="RentalData">
-                        <select class="form-control id-cell" id="item${index}Admin" >
-                          ${appendCorrectAdmin(admins, itemResp)}
-                        </select>
-                      </td>
                       <td class="RentalData">
                         <input type="text" class="form-control id-cell" id="item${index}Name" value="${name}">
                       </td>
