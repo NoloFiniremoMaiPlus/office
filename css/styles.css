@@ -425,6 +425,34 @@ td input {
   width: fit-content !important;
 }
 
+#ui-datepicker-div {
+  padding: 0;
+  width: max-content;
+}
+
+.ui-icon-circle-triangle-w {
+  padding-left: 1rem;
+}
+
+.ui-datepicker-prev {
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.ui-datepicker-next {
+  margin: 0;
+  padding-right: 1rem;
+}
+
+.ui-datepicker-header {
+  padding-left: 0.5rem !important;
+}
+
+.ui-datepicker-calendar {
+  padding: 0;
+  margin: 0 !important;
+}
+
 /* Bills */
 
 #BillCard {
@@ -566,6 +594,7 @@ td input {
   font-weight: bold;
   padding-left: 0.5rem;
   width: min-content !important;
+  text-align: center;
 }
 
 #slider-range {
@@ -624,4 +653,124 @@ td input {
   width: 12rem !important;
   height: auto !important;
   border-radius: 1rem !important;
+}
+
+#DatesRangeDiscountCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80vw;
+  border: 1px solid black !important;
+}
+
+#datesRangeDiscountsContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+  border: 1px solid black;
+}
+
+#datesRangeDiscountsExisting {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+  border: 1px solid black;
+}
+
+#datesRangeDiscount {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0.5rem 1rem;
+}
+
+.dateInput {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.inputLabel {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 1rem !important;
+  text-align: center;
+}
+
+.discountButton {
+  color: black !important;
+  margin: 2rem 0;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 2rem 1rem !important;
+}
+
+label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 1rem !important;
+  display: flex;
+  width: max-content;
+}
+
+.paddingInput {
+  margin: 1rem 5rem;
+  padding: 0.5rem;
+}
+
+.weekDayDiscount {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 1rem;
+}
+
+.weekDayBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 1rem;
+}
+
+.discountRangeContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2rem 1rem;
+}
+
+.rangeLabel {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 1rem !important;
+  display: flex;
+  width: max-content;
+}
+
+span {
+  font-weight: normal;
+  margin-left: 2rem;
 }

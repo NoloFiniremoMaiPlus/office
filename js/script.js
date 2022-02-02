@@ -2,11 +2,12 @@
 
 let currentNotationIndex = -1;
 let currentItemIndex = -1;
+let currentItemId = -1;
 let allItems = [];
 let localhost = "https://192.168.1.9:8443";
 let surchargeTax = 1.5;
 let minCost = 0;
-let maxCost = 1000;
+let maxCost = 100;
 
 const allStates = ["Booked", "Accepted", "Ongoing", "Expired", "Returned"];
 const itemStates = {
@@ -199,9 +200,7 @@ function userAnagraphic() {
       sortBy: "username:asc",
     },
     success: function (res) {
-      users = res.results.filter(
-        (user) => user.role == "user" || user.id == getLoggedAdminId()
-      );
+      users = res.results;
       let tbody = $("#ADBody");
       tbody.empty();
       for (let u of users) {
@@ -501,15 +500,17 @@ function showRentalAnnotations(index) {
       }
     },
     error: function (res) {
-      alert("Errore durante il recupero degli utenti");
-      console.log(res.responseText);
+      alert("Errore durante il recupero delle annotazioni");
     },
   });
 }
 
 /* Helpful functions for the rentals */
 function getDaysDistance(start, end) {
-  return Math.ceil((new Date(end) - new Date(start)) / (1000 * 3600 * 24));
+  let days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 3600 * 24));
+  console.log(days);
+  if (days != 0) days++;
+  return days;
 }
 
 function elaborateBaseCost(basePrice, dailyPrice, daysNumber) {
@@ -532,8 +533,8 @@ function elaborateSurcharge(basePrice, dailyPrice, daysNumber) {
   return parseInt(dailyPrice * daysNumber * surchargeTax);
 }
 
-function elaborateTotalCost(baseCost, discount, surcharge) {
-  total = parseInt(baseCost - discount + surcharge);
+function elaborateTotalCost(baseCost, discount, loyalty, surcharge) {
+  total = parseInt(baseCost - discount - loyalty + surcharge);
   return total >= 0 ? total : 0;
 }
 
@@ -689,19 +690,32 @@ function appendAllItemAdmin(id) {
 
 /* User Rentals */
 function showUserRentals(index) {
-  console.log("Mostro i noleggi dell'utente");
-  let id = $(`#client${index}Id`).val().trim();
-  $("#UserAnagraphicModal").modal("hide");
-  $("#ShowRentalsModal").modal("show");
-  showRentals(true, id);
+  console.log(getLoggedAdminId());
+  if (getLoggedAdminId()) {
+    console.log("Mostro i noleggi dell'utente");
+    let id = $(`#client${index}Id`).val().trim();
+    $("#UserAnagraphicModal").modal("hide");
+    $("#ShowRentalsModal").modal("show");
+    showRentals(true, id);
+  } else {
+    alert(
+      "Non sei autorizzato a visualizzare i noleggi degli utenti. Esegui il login come amministratore"
+    );
+  }
 }
 
 function showItemRentals(index) {
-  console.log("Mostro i noleggi dell'oggetto");
-  let id = $(`#item${index}Id`).val().trim();
-  $("#ItemsModal").modal("hide");
-  $("#ShowRentalsModal").modal("show");
-  showRentals(null, null, true, id);
+  if (getLoggedAdminId()) {
+    console.log("Mostro i noleggi dell'oggetto");
+    let id = $(`#item${index}Id`).val().trim();
+    $("#ItemsModal").modal("hide");
+    $("#ShowRentalsModal").modal("show");
+    showRentals(null, null, true, id);
+  } else {
+    alert(
+      "Non sei autorizzato a visualizzare i noleggi degli oggetti. Esegui il login come amministratore"
+    );
+  }
 }
 
 function insertRentalActions(index, state) {
@@ -709,67 +723,77 @@ function insertRentalActions(index, state) {
     $("#rentalEdit" + index).hide();
     $(`#rental${index}State`).prop("disabled", true);
     $(`#rental${index}ReturnDate`).prop("disabled", true);
-    $(`#saveRentalInfos${index}Button`).hide();
     $(`#createRental${index}Button`).hide();
   } else {
     $("#rentalBill" + index).hide();
     $("#rentalAddNotes" + index).hide();
     $("#rentalGetNotes" + index).hide();
-    $(`#createRental${index}Button`).hide();
   }
 
   if (state != "Booked") {
     $("#rentalRemove" + index).hide();
   } else {
     $(`#rental${index}AdminId`).prop("disabled", false);
-    $(`#rental${index}Item`).prop("disabled", false);
     $(`#rental${index}Dates`).prop("disabled", false);
   }
+  $(`#saveRentalInfos${index}Button`).hide();
 }
 
 function editRowRental(index) {
   let key = index != undefined ? index : "Input";
   console.log("Completo i campi del noleggio");
   let item = $(`#rental${key}Item`).val();
-  let items = allItems;
-  let dates = $(`#rental${key}Dates`).val().split(" | ");
-  let returnDate = $(`#rental${key}ReturnDate`).val();
-  let points = parseInt($(`#rental${key}Points`).val());
-  let days = parseInt(getDaysDistance(dates[0], dates[1]));
-  let lateDays = parseInt(getDaysDistance(dates[1], returnDate));
-  let itemInfos = "";
+  let user = $(`#rental${key}UserId`).val();
+  let start = $(`#rental${key}StartDate`).val();
+  let end = $(`#rental${key}EndDate`).val();
+  let returnDate = $(`#rental${key}ReturnDate`).val() || "";
+  let points = parseInt($(`#rental${key}Points`).val()) || 0;
 
-  for (let i = 0; i < items.length; i++) {
-    if (items[i].id == item) {
-      itemInfos = items[i];
-      break;
-    }
+  start = start.split("/").reverse().join("-");
+  end = end.split("/").reverse().join("-");
+  returnDate = returnDate.split("/").reverse().join("-");
+
+  let data = {
+    user: user,
+    item: item,
+    from: start,
+    to: end,
+    loyalty: points,
+    estimate: true,
+  };
+
+  if (returnDate != "") {
+    data.return = returnDate;
   }
 
-  let baseCost = elaborateBaseCost(
-    itemInfos.basePrice,
-    itemInfos.dailyPrice,
-    days
-  );
-  let discount = elaborateDiscount(
-    itemInfos.basePrice,
-    itemInfos.dailyPrice,
-    days,
-    itemInfos.discount,
-    points
-  );
-  let surcharge = elaborateSurcharge(
-    itemInfos.basePrice,
-    itemInfos.dailyPrice,
-    lateDays
-  );
-  $(`#rental${key}BaseCost`).val(baseCost);
-  $(`#rental${key}Discount`).val(discount);
-  $(`#rental${key}Surcharge`).val(surcharge);
-  $(`#createRental${key}Button`).show();
+  $.ajax({
+    url: localhost + "/v1/rentals",
+    type: "POST",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    data: data,
+    success: function (res) {
+      console.log(res);
+      base = res.base;
+      loyalty = res.loyalty;
+      surcharge = res.surcharge;
+      total = res.total;
+      $(`#rental${key}BaseCost`).val(base.toFixed(2));
+      $(`#rental${key}Discount`).val(
+        (base - total - loyalty + surcharge).toFixed(2)
+      );
+      $(`#rental${key}Surcharge`).val(surcharge.toFixed(2));
+      $(`#createRental${key}Button`).show();
+    },
+    error: function () {
+      alert("Errore durante il recupero del preventivo");
+    },
+  });
 }
 
 function elaborateStates(fromUser, userId, fromItem, itemId) {
+  states = [];
   if (fromUser || fromItem) {
     states =
       userId || itemId
@@ -777,6 +801,81 @@ function elaborateStates(fromUser, userId, fromItem, itemId) {
         : ["Expired", "Ongoing", "Accepted", "Booked"];
   } else states = ["Returned"];
   return states;
+}
+
+function changeDates() {
+  let today = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  $("#rentalInputStartDate").datepicker("destroy");
+  $("#rentalInputEndDate").datepicker("destroy");
+  let id = $("#rentalInputItem").val();
+  $.ajax({
+    url: localhost + "/v1/items/" + id,
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    success: function (res) {
+      let unavailableDates = [];
+      let unavailableDatesRanges = res.unavailable;
+      for (range of unavailableDatesRanges) {
+        //Push every Date between from and to into unavailableDates
+        let from = range.from.slice(0, 10);
+        let to = range.to.slice(0, 10);
+        while (from <= to) {
+          unavailableDates.push(from);
+          let current = new Date(from);
+          current.setDate(current.getDate() + 1);
+          from = current.toISOString().slice(0, 10);
+        }
+      }
+      $(`#rentalInputStartDate`).datepicker({
+        dateFormat: "dd/mm/yy",
+        //TODO: se devo permetterli nel passato commento
+        minDate: today,
+        beforeShowDay: function (date) {
+          let string = jQuery.datepicker.formatDate("yy-mm-dd", date);
+          return [unavailableDates.indexOf(string) == -1];
+        },
+      });
+      $(`#rentalInputEndDate`).datepicker({
+        dateFormat: "dd/mm/yy",
+        //TODO: se devo permetterli nel passato commento
+        minDate: tomorrow,
+        beforeShowDay: function (date) {
+          let string = jQuery.datepicker.formatDate("yy-mm-dd", date);
+          return [unavailableDates.indexOf(string) == -1];
+        },
+      });
+      $(`#rentalInputReturnDate`).datepicker({
+        dateFormat: "dd/mm/yy",
+        minDate: tomorrow,
+        beforeShowDay: function (date) {
+          let string = jQuery.datepicker.formatDate("yy-mm-dd", date);
+          return [unavailableDates.indexOf(string) == -1];
+        },
+      });
+    },
+    error: function (res) {
+      alert("Errore durante il recupero dell'oggetto");
+    },
+  });
+}
+
+function changeEndDate() {
+  let min = $(`#rentalInputStartDate`).val();
+  min = min.split("/").reverse().join("/");
+  let minDate = new Date(min);
+  $("#rentalInputEndDate").datepicker("option", "minDate", minDate);
+  $(`#rentalInputReturnDate`).datepicker("option", "minDate", minDate);
+}
+
+function changeReturnDate() {
+  let min = $(`#rentalInputEndDate`).val();
+  min = min.split("/").reverse().join("/");
+  let minDate = new Date(min);
+  $(`#rentalInputReturnDate`).datepicker("option", "minDate", minDate);
 }
 
 function showRentals(fromUser, userId, fromItem, itemId) {
@@ -794,9 +893,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
     },
     success: function (res) {
       admins = res.results.filter((user) => user.role == "backoffice");
-      users = res.results.filter(
-        (user) => user.role == "user" || user.id == getLoggedAdminId()
-      );
+      users = res.results;
       console.log("Recupero gli oggetti");
       $.ajax({
         url: localhost + "/v1/items",
@@ -806,7 +903,8 @@ function showRentals(fromUser, userId, fromItem, itemId) {
         },
         success: function (items) {
           states = elaborateStates(fromUser, userId, fromItem, itemId);
-          if (states != ["Completed"])
+          console.log(states);
+          if (states.length != 1 || states[0] != "Returned")
             tbody.append(createNewRentalFromRow(userId, items, itemId));
           filters = {
             sortBy: "from:desc",
@@ -826,6 +924,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                 data: filters,
                 success: function (res) {
                   rentals = res.results;
+                  console.log(rentals);
                   for (let r of rentals) {
                     let rentalId = r.id;
                     let rentalUser = r.user != null ? r.user.id : "";
@@ -834,11 +933,14 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                     let state = r.state;
                     let start = r.from.substring(0, 10);
                     let end = r.to.substring(0, 10);
-                    let returnDate = r.return.substring(0, 10);
-                    let baseCost = parseInt(r.price.$numberDecimal);
-                    let discount = parseInt(r.discount.$numberDecimal);
-                    let surcharge = parseInt(r.surcharge.$numberDecimal);
-                    let loyalties = parseInt(r.loyalty);
+                    let returnDate = r.return ? r.return.substring(0, 10) : "";
+                    let baseCost = Number(r.base.toFixed(2));
+                    let surcharge = Number(r.surcharge.toFixed(2));
+                    let loyalties = Number(r.loyalty.toFixed(2));
+                    let total = Number(r.total).toFixed(2);
+                    let discount = Number(
+                      (baseCost - total - loyalties + surcharge).toFixed(2)
+                    );
                     let tr = document.createElement("tr");
                     tr.className = `${state}Row`;
                     tr.innerHTML = `
@@ -851,7 +953,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                         </select>
                       </td>
                       <td class="RentalData">
-                        <select class="form-control id-cell" id="rental${index}Admin">
+                        <select class="form-control id-cell" id="rental${index}Admin" disabled>
                           ${appendCorrectAdmin(admins, rentalAdmin)}
                         </select>
                       </td>
@@ -866,10 +968,13 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                         </select>
                       </td>
                       <td class="RentalData">
-                        <input type="text" class="form-control" id="rental${index}Dates" value="${start} | ${end}" disabled>
+                        <input type="text" class="form-control" id="rental${index}StartDate" value="${start}" onchange="changeEndDate()" disabled>
                       </td>
                       <td class="RentalData">
-                        <input type="date" class="form-control" id="rental${index}ReturnDate" value="${returnDate}">
+                        <input type="text" class="form-control" id="rental${index}EndDate" value="${end}" disabled>
+                      </td>
+                      <td class="RentalData">
+                        <input type="text" class="form-control" id="rental${index}ReturnDate" value="${returnDate}">
                       </td>
                       <td class="RentalData">
                         <input type="text" class="form-control id-cell" id="rental${index}Points" value="${loyalties}" disabled>
@@ -908,7 +1013,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
           }
         },
         error: function (res) {
-          alert("Errore durante il recupero degli oggetti");
+          alert("Errore durante il recupero degli utenti");
           location.reload();
         },
       });
@@ -937,7 +1042,7 @@ function createNewRentalFromRow(userId, items, itemId) {
       <input type="text" class="form-control id-cell" id="rentalInputAdmin" value="Auto-Ricavato" disabled>
     </td>
     <td class="RentalData">
-      <select class="form-control id-cell" id="rentalInputItem" value="">
+      <select class="form-control id-cell" id="rentalInputItem" value="" onchange="changeDates()">
         ${appendCorrectItem(allItems, itemId)}
       </select>
     </td>
@@ -947,10 +1052,13 @@ function createNewRentalFromRow(userId, items, itemId) {
       </select>
     </td>
     <td class="RentalData">
-      <input type="text" class="form-control" id="rentalInputDates" value="">
+      <input type="text" class="form-control" id="rentalInputStartDate" onchange="changeEndDate()" value="">
     </td>
     <td class="RentalData">
-      <input type="date" class="form-control" id="rentalInputReturnDate">
+      <input type="text" class="form-control" id="rentalInputEndDate" onchange="changeReturnDate()" value="">
+    </td>
+    <td class="RentalData">
+      <input type="text" class="form-control" id="rentalInputReturnDate">
     </td>
     <td class="RentalData">
       <input type="text" class="form-control id-cell" id="rentalInputPoints">
@@ -974,40 +1082,104 @@ function createNewRentalFromRow(userId, items, itemId) {
 }
 
 function postRentalFromRow() {
-  let user = $("#rentalInputUserId").val().trim();
-  let item = $("#rentalInputItem").val().trim();
-  let state = $("#rentalInputState").val().trim();
-  let dates = $("#rentalInputDates").val().trim();
-  let start = dates.split("|")[0].trim();
-  let end = dates.split("|")[1].trim();
-  let returnDate = $("#rentalInputReturnDate").val().trim();
-  let baseCost = $("#rentalInputBaseCost").val().trim();
-  let points = $("#rentalInputPoints").val().trim();
-  let discount = $("#rentalInputDiscount").val().trim();
-  let surcharge = $("#rentalInputSurcharge").val().trim();
+  console.log("Completo i campi del noleggio");
+  let item = $(`#rentalInputItem`).val();
+  let user = $(`#rentalInputUserId`).val();
+  let state = $(`#rentalInputState`).val();
+  let start = $(`#rentalInputStartDate`).val();
+  let end = $(`#rentalInputEndDate`).val();
+  let returnDate = $(`#rentalInputReturnDate`).val() || "";
+  let points = parseInt($(`#rentalInputPoints`).val()) || 0;
+
+  start = start.split("/").reverse().join("-");
+  end = end.split("/").reverse().join("-");
+  returnDate = returnDate.split("/").reverse().join("-");
+
+  let data = {
+    user: user,
+    item: item,
+    state: state,
+    from: start,
+    to: end,
+    loyalty: points,
+  };
+
+  if (returnDate != "") {
+    data.return = returnDate;
+  }
+
   $.ajax({
-    url: localhost + `/v1/rentals`,
+    url: localhost + "/v1/rentals",
     type: "POST",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
-    data: {
-      user: user,
-      item: item,
-      state: state,
-      from: start,
-      to: end,
-      return: returnDate,
-      discount: discount,
-      loyalty: points,
-      surcharge: surcharge,
-      price: baseCost,
+    data: data,
+    success: function () {
+      location.reload();
+    },
+    error: function () {
+      alert("Errore durante la creazione del noleggio");
+    },
+  });
+}
+
+function editRental(index) {
+  console.log("Completo i campi del noleggio");
+  let rentalId = $(`#rental${index}Id`).val();
+  let item = $(`#rental${index}Item`).val();
+  let user = $(`#rental${index}UserId`).val();
+  let state = $(`#rental${index}State`).val();
+  let start = $(`#rental${index}StartDate`).val();
+  let end = $(`#rental${index}EndDate`).val();
+  let returnDate = $(`#rental${index}ReturnDate`).val() || "";
+
+  start = start.split("/").reverse().join("-");
+  end = end.split("/").reverse().join("-");
+  returnDate = returnDate.split("/").reverse().join("-");
+
+  let data = {
+    user: user,
+    item: item,
+    state: state,
+    from: start,
+    to: end,
+  };
+
+  if (returnDate != "") {
+    data.return = returnDate;
+  }
+
+  $.ajax({
+    url: localhost + "/v1/rentals/" + rentalId,
+    type: "PATCH",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    data: data,
+    success: function () {
+      location.reload();
+    },
+    error: function () {
+      alert("Errore durante la creazione del noleggio");
+    },
+  });
+}
+
+function removeRental(index) {
+  let id = $(`#rental${index}Id`).val().trim();
+  console.log("Procedo a rimuovere il noleggio con id: " + id);
+  $.ajax({
+    url: localhost + `/v1/rentals/${id}`,
+    type: "DELETE",
+    headers: {
+      Authorization: "Bearer " + getToken(),
     },
     success: function (res) {
       location.reload();
     },
     error: function (res) {
-      alert("Errore durante l'aggiunta del noleggio");
+      alert("Errore durante la ricerca dei noleggi in corso");
       console.log(res.responseText);
     },
   });
@@ -1017,12 +1189,11 @@ function getRentalBill(index) {
   let id = $(`#rental${index}Id`).val().trim();
   let user = $(`#rental${index}UserId option:selected`).text().trim();
   let item = $(`#rental${index}Item option:selected`).text().trim();
-  let dates = $(`#rental${index}Dates`).val().trim();
-  let start = dates.split("|")[0].trim();
-  let end = dates.split("|")[1].trim();
+  let start = $(`#rental${index}StartDate`).val().trim();
+  let end = $(`#rental${index}EndDate`).val().trim();
   let days = getDaysDistance(start, end);
   let returnDate = $(`#rental${index}ReturnDate`).val().trim();
-  lateDays = getDaysDistance(end, returnDate);
+  let lateDays = getDaysDistance(end, returnDate);
   let baseCost = $(`#rental${index}BaseCost`).val().trim();
   let points = $(`#rental${index}Points`).val().trim();
   let discount = $(`#rental${index}Discount`).val().trim();
@@ -1030,6 +1201,7 @@ function getRentalBill(index) {
   let totalCost = elaborateTotalCost(
     parseInt(baseCost),
     parseInt(discount),
+    parseInt(points),
     parseInt(surcharge)
   );
   $("#rentalIds").html(id + "<br>" + user + "<br>" + item);
@@ -1043,80 +1215,6 @@ function getRentalBill(index) {
   $("#billTotalCost").text(totalCost + "€");
   $("#UserRentalsModal").modal("hide");
   $("#BillModal").modal("show");
-}
-
-function checkAdmin(adminId) {
-  if (getLoggedAdminId() == adminId || getLoggedAdminId() == "") {
-    return true;
-  }
-  return false;
-}
-
-function editRental(index) {
-  if (checkAdmin($("#rental" + index + "Admin").val())) {
-    console.log("Procedo ad editare il noleggio");
-    let rentalId = $(`#rental${index}Id`).val();
-    let userId = $(`#rental${index}UserId`).val().trim();
-    let resposible = $(`#rental${index}Admin`).val().trim();
-    let item = $(`#rental${index}Item`).val().trim();
-    let state = $(`#rental${index}State`).val().trim();
-    let dates = $(`#rental${index}Dates`).val().trim();
-    let start = dates.split(`|`)[0].trim();
-    let end = dates.split(`|`)[1].trim();
-    let returnDate = $(`#rental${index}ReturnDate`).val().trim();
-    let baseCost = $(`#rental${index}BaseCost`).val().trim();
-    let discount = $(`#rental${index}Discount`).val().trim();
-    let surcharge = $(`#rental${index}Surcharge`).val().trim();
-    $.ajax({
-      url: localhost + `/v1/rentals/${rentalId}`,
-      type: "PATCH",
-      headers: {
-        Authorization: "Bearer " + getToken(),
-      },
-      data: {
-        user: userId,
-        resp: resposible,
-        item: item,
-        state: state,
-        from: start,
-        to: end,
-        return: returnDate,
-        price: baseCost,
-        discount: discount,
-        surcharge: surcharge,
-      },
-      success: function (res) {
-        location.reload();
-      },
-      error: function (res) {
-        alert("Errore durante la modifica dell'utente");
-        console.log(res.responseText);
-      },
-    });
-  } else {
-    alert("Non sei autorizzato a modificare questo noleggio");
-  }
-}
-
-function removeRental(index) {
-  if (checkAdmin($("#rental" + index + "Admin").val())) {
-    let id = $(`#rental${index}Id`).val().trim();
-    console.log("Procedo a rimuovere il noleggio con id: " + id);
-    $.ajax({
-      url: localhost + `/v1/rentals/${id}`,
-      type: "DELETE",
-      headers: {
-        Authorization: "Bearer " + getToken(),
-      },
-      success: function (res) {
-        location.reload();
-      },
-      error: function (res) {
-        alert("Errore durante la ricerca dei noleggi in corso");
-        console.log(res.responseText);
-      },
-    });
-  }
 }
 
 /* Inventory */
@@ -1159,12 +1257,16 @@ function updateSlider() {
 }
 
 function addItem() {
-  appendAllItemStates("stateInput");
-  appendAllItemCategories("categoryInput");
-  appendAllItemBrands("brandInput");
-  appendAllItemAdmin("adminInput");
-  $("#InventoryModal").modal("hide");
-  $("#AddItemModal").modal("show");
+  if (getLoggedAdminId()) {
+    appendAllItemStates("stateInput");
+    appendAllItemCategories("categoryInput");
+    appendAllItemBrands("brandInput");
+    appendAllItemAdmin("adminInput");
+    $("#InventoryModal").modal("hide");
+    $("#AddItemModal").modal("show");
+  } else {
+    alert("Non sei autorizzato a inserire un nuovo oggetto");
+  }
 }
 
 function resetFilters() {
@@ -1197,45 +1299,32 @@ function searchItems() {
   filters = category != "" ? { ...filters, category: category } : filters;
   filters = brand != "" ? { ...filters, brand: brand } : filters;
   filters = state != "" ? { ...filters, state: state } : filters;
-  console.log("Recupero gli utenti");
+  console.log("Recupero gli items");
   $.ajax({
-    url: localhost + "/v1/users",
+    url: localhost + "/v1/items",
     type: "GET",
+    data: filters,
+    dataType: "json",
     headers: {
       Authorization: "Bearer " + getToken(),
     },
-    data: {
-      role: "backoffice",
-      sortBy: "username:asc",
-    },
-    success: function (users) {
-      console.log("Recupero gli items");
-      admins = users.results;
-      $.ajax({
-        url: localhost + "/v1/items",
-        type: "GET",
-        data: filters,
-        dataType: "json",
-        headers: {
-          Authorization: "Bearer " + getToken(),
-        },
-        success: function (res) {
-          items = res.results;
-          for (let i of items) {
-            index = items.indexOf(i);
-            let itemId = i.id;
-            let name = i.name;
-            let image = i.image;
-            let description = i.description;
-            let state = i.state;
-            let category = i.category;
-            let brand = i.brand;
-            let baseCost = i.basePrice;
-            let dailyCost = i.dailyPrice;
-            let discount = i.discount;
-            let enabled = i.enabled;
-            let tr = document.createElement("tr");
-            tr.innerHTML = `
+    success: function (res) {
+      items = res.results;
+      for (let i of items) {
+        index = items.indexOf(i);
+        let itemId = i.id;
+        let name = i.name;
+        let image = i.image;
+        let description = i.description;
+        let state = i.state;
+        let category = i.category;
+        let brand = i.brand;
+        let baseCost = i.basePrice;
+        let dailyCost = i.dailyPrice;
+        let discount = i.discount;
+        let enabled = i.enabled;
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
                       <td class="RentalData">
                         <img src="${image}" class="itemImage image-cell" id="item${index}Icon" alt="Icona Oggetto">
                       </td>
@@ -1276,7 +1365,7 @@ function searchItems() {
                         <input type="text" class="form-control id-cell" id="item${index}Discount" value="${discount}" >
                       </td>
                       <td class="RentalData">
-                        <select class="form-control id-cell" id="item${index}State">
+                        <select class="form-control id-cell" id="item${index}Enable">
                           ${appendCorrectEnableState(enabled)}
                         </select>
                       </td>
@@ -1287,24 +1376,22 @@ function searchItems() {
                             <button class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editItem(${index})"></button>
                             <button class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeItem(${index})"></button>
                           </div>
+                          <div class="modalActions">
+                            <button class="btn btn-primary bi bi-calendar-date" id="changeDatesRangeDiscount${index}Button" onclick="showDatesRangeDiscountModal(${index})"></button>
+                            <button class="btn btn-primary bi bi-calendar-week" id="changeWeekDayDiscount${index}Button" onclick="showWeekDayDiscountModal(${index})"></button>
+                          </div>
                         </div>
                     </td>`;
-            tbody.append(tr);
-          }
-        },
-        error: function (err) {
-          alert("Errore nel recupero degli items");
-          console.log(err.responseText);
-        },
-      });
-      $("#InventoryModal").modal("hide");
-      $("#ItemsModal").modal("show");
+        tbody.append(tr);
+      }
     },
     error: function (err) {
-      console.log("Errore nel recupero degli utenti");
+      alert("Errore nel recupero degli items");
       console.log(err.responseText);
     },
   });
+  $("#InventoryModal").modal("hide");
+  $("#ItemsModal").modal("show");
 }
 
 function insertNewItem() {
@@ -1341,178 +1428,252 @@ function insertNewItem() {
 }
 
 function editItem(index) {
-  if (checkAdmin($("#item" + index + "Admin").val())) {
-    let id = $("#item" + index + "Id").val();
-    let item = {
-      image: $("#item" + index + "Image").val(),
-      name: $("#item" + index + "Name").val(),
-      description: $("#item" + index + "Description").val(),
-      category: $("#item" + index + "Category").val(),
-      resp: $("#item" + index + "Admin").val(),
-      brand: $("#item" + index + "Brand").val(),
-      state: $("#item" + index + "State").val(),
-      basePrice: $("#item" + index + "Costs")
-        .val()
-        .split("|")[0]
-        .trim(),
-      dailyPrice: $("#item" + index + "Costs")
-        .val()
-        .split("|")[1]
-        .trim(),
-      discount: $("#item" + index + "Discount").val(),
-      enabled: $("#item" + index + "State").val() === "true",
-    };
-    console.log(item.enabled);
-    console.log("Aggiorno l'item");
-    $.ajax({
-      url: localhost + "/v1/items/" + id,
-      type: "PATCH",
-      headers: {
-        Authorization: "Bearer " + getToken(),
-      },
-      data: item,
-      success: function (data) {
-        $("#ItemsModal").modal("hide");
-        location.reload();
-      },
-      error: function (err) {
-        alert("Errore nella modifica dell'item");
-        console.log(err.responseText);
-      },
-    });
-  } else {
-    alert("Non hai i permessi per modificare questo elemento");
-    location.reload();
-  }
+  let id = $("#item" + index + "Id").val();
+  let item = {
+    image: $("#item" + index + "Image").val(),
+    name: $("#item" + index + "Name").val(),
+    description: $("#item" + index + "Description").val(),
+    category: $("#item" + index + "Category").val(),
+    resp: $("#item" + index + "Admin").val(),
+    brand: $("#item" + index + "Brand").val(),
+    state: $("#item" + index + "State").val(),
+    basePrice: $("#item" + index + "Costs")
+      .val()
+      .split("|")[0]
+      .trim(),
+    dailyPrice: $("#item" + index + "Costs")
+      .val()
+      .split("|")[1]
+      .trim(),
+    discount: $("#item" + index + "Discount").val(),
+    enabled: $("#item" + index + "Enable").val() == "true",
+  };
+  console.log("Aggiorno l'item");
+  $.ajax({
+    url: localhost + "/v1/items/" + id,
+    type: "PATCH",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    data: item,
+    success: function () {
+      $("#ItemsModal").modal("hide");
+      location.reload();
+    },
+    error: function (err) {
+      alert("Errore nella modifica dell'item");
+      console.log(err.responseText);
+    },
+  });
 }
 
 function removeItem(index) {
-  if (checkAdmin($("#item" + index + "Admin").val())) {
-    let itemId = $("#item" + index + "Id").val();
-    console.log("Recupero i noleggi dell'item");
-    $.ajax({
-      url: localhost + "/v1/rentals/",
-      type: "GET",
-      data: { item: itemId },
-      success: function (data) {
-        if (data.results.length == 0) {
-          $.ajax({
-            url: localhost + "/v1/items/" + itemId,
-            type: "DELETE",
-            headers: {
-              Authorization: "Bearer " + getToken(),
-            },
-            success: function (data) {
-              $("#ItemsModal").modal("hide");
-              location.reload();
-            },
-            error: function (err) {
-              alert("Errore nella rimozione dell'item");
-            },
-          });
-        } else {
-          $.ajax({
-            url: localhost + "/v1/items/" + itemId,
-            type: "PATCH",
-            headers: {
-              Authorization: "Bearer " + getToken(),
-            },
-            data: { enabled: false },
-            success: function (data) {
-              $("#ItemsModal").modal("hide");
-              alert(
-                "Non puoi eliminare un oggetto che è o è stato in prestito: è stato reso indisponibile"
-              );
-              location.reload();
-            },
-            error: function (err) {
-              alert("Errore nell'editing dell'item");
-            },
-          });
-        }
-      },
-      error: function (err) {
-        alert("Errore nella recupero dei noleggi");
-      },
-    });
-  } else {
-    alert("Non hai i permessi per modificare questo elemento");
-    location.reload();
+  let itemId = $("#item" + index + "Id").val();
+  console.log("Recupero i noleggi dell'item");
+  $.ajax({
+    url: localhost + "/v1/rentals/",
+    type: "GET",
+    data: { item: itemId },
+    success: function (data) {
+      if (data.results.length == 0) {
+        $.ajax({
+          url: localhost + "/v1/items/" + itemId,
+          type: "DELETE",
+          headers: {
+            Authorization: "Bearer " + getToken(),
+          },
+          success: function (data) {
+            $("#ItemsModal").modal("hide");
+            location.reload();
+          },
+          error: function (err) {
+            alert("Errore nella rimozione dell'item");
+          },
+        });
+      } else {
+        $.ajax({
+          url: localhost + "/v1/items/" + itemId,
+          type: "PATCH",
+          headers: {
+            Authorization: "Bearer " + getToken(),
+          },
+          data: { enabled: false },
+          success: function (data) {
+            $("#ItemsModal").modal("hide");
+            alert(
+              "Non puoi eliminare un oggetto che è o è stato in prestito: è stato reso indisponibile"
+            );
+            location.reload();
+          },
+          error: function (err) {
+            alert("Errore nell'editing dell'item");
+          },
+        });
+      }
+    },
+    error: function (err) {
+      alert("Errore nella recupero dei noleggi");
+    },
+  });
+}
+
+function showDatesRangeDiscountModal(id) {
+  $("#ItemsModal").modal("hide");
+  $("#DatesRangeDiscountModal").modal("show");
+  let itemId = $("#item" + index + "Id").val();
+  currentItemId = itemId;
+  $.ajax({
+    url: localhost + "/v1/items/" + itemId,
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    success: function (data) {
+      html = "";
+      discounts = data.discountsDate;
+      for (discount of discounts) {
+        html += `
+          <div class="discountRangeContainer">
+              <div class="rangeLabel">Inizio Sconto: <span>${discount.from.slice(
+                0,
+                10
+              )}</span></div>
+              <div class="rangeLabel">Fine Sconto: <span>${discount.to.slice(
+                0,
+                10
+              )}</span></div>
+              <div class="rangeLabel">Percentuale Sconto: <span>${
+                discount.amount
+              }</span></div>
+              <div class="rangeLabel">Descrizione Sconto: <span>${
+                discount.description
+              }</span></div>
+          </div>
+        `;
+      }
+      $("#existingDiscounts").html(html);
+    },
+    error: function (err) {
+      alert("Errore nella recupero dell'item");
+    },
+  });
+}
+
+function showWeekDayDiscountModal(id) {
+  $("#ItemsModal").modal("hide");
+  $("#WeekDayDiscountModal").modal("show");
+  let itemId = $("#item" + index + "Id").val();
+  currentItemId = itemId;
+  $.ajax({
+    url: localhost + "/v1/items/" + itemId,
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    success: function (data) {
+      html = "";
+      discounts = data.discountsWeekday;
+      for (discount of discounts) {
+        console.log(discount);
+        $("#startDate" + (discounts.indexOf(discount) + 1)).val(discount.from);
+        $("#endDate" + (discounts.indexOf(discount) + 1)).val(discount.to);
+        $("#amountWeek" + (discounts.indexOf(discount) + 1)).val(
+          discount.amount
+        );
+        $("#descriptionWeek" + (discounts.indexOf(discount) + 1)).val(
+          discount.description
+        );
+      }
+    },
+    error: function (err) {
+      alert("Errore nella recupero dell'item");
+    },
+  });
+}
+
+function addRangeDiscount() {
+  let itemId = currentItemId;
+  let start = $("#startDate").val();
+  let end = $("#endDate").val();
+  let description = $("#descriptionRange").val();
+  let amount = $("#amountRange").val();
+  let discount = {
+    from: start,
+    to: end,
+    description: description,
+    amount: amount,
+  };
+  $.ajax({
+    url: localhost + "/v1/items/" + itemId,
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    success: function (data) {
+      discounts = data.discountsDate;
+      discounts.push(discount);
+      $.ajax({
+        url: localhost + "/v1/items/" + itemId,
+        type: "PATCH",
+        headers: {
+          Authorization: "Bearer " + getToken(),
+        },
+        data: {
+          discountsDate: discounts,
+        },
+        success: function (data) {
+          $("#DatesRangeDiscountModal").modal("hide");
+          location.reload();
+        },
+      });
+    },
+  });
+}
+
+function addWeekDayDiscounts() {
+  let itemId = currentItemId;
+  let discounts = [];
+  for (let j = 0; j < 7; j++) {
+    let i = j + 1;
+    let start = $("#startDate" + i).val();
+    let end = $("#endDate" + i).val();
+    let description = $("#descriptionWeek" + i).val();
+    let amount = $("#amountWeek" + i).val();
+    if (start != "" && end != "" && description != "" && amount != "") {
+      let discount = {
+        from: start,
+        to: end,
+        description: description,
+        amount: amount,
+      };
+      discounts.push(discount);
+    }
   }
-}
 
-function showAvaiability(index) {
-  $("#ItemsModal").modal("hide");
-  $("#AvaiabilityModal").modal("show");
-  $("unavaiabilityButton").hide();
-  currentItemIndex = index;
-}
-
-function showUnavaiability(index) {
-  $("#ItemsModal").modal("hide");
-  $("#AvaiabilityModal").modal("show");
-  $("avaiabilityButton").show();
-  currentItemIndex = index;
-}
-
-function addAvaiability() {
-  index = currentItemIndex;
-  let from = $("#fromInput").val();
-  let to = $("#toInput").val();
-  let itemId = $(`#item${index}Id`).val().trim();
-  let avaiability = {
-    from: from,
-    to: to,
-    itemId: itemId,
-  };
-  console.log(
-    "Procedo ad aggiungere l'avaiabilità: " + JSON.stringify(avaiability)
-  );
-  // $.ajax({
-  //   url: localhost + "/v1/avaiabilities",
-  //   type: "POST",
-  //   data: { avaiability },
-  //   dataType: "json",
-  //   contentType: "application/x-www-form-urlencoded",
-  //   success: function (data) {
-  //     console.log("Avaiabilità aggiunta");
-  //     $("#AvaiabilityModal").modal("hide");
-  //     location.reload();
-  //   },
-  //   error: function (data) {
-  //   console.log("Errore nell'aggiunta della disponibilità");
-  //   $("#AvaiabilityModal").modal("hide");
-  // },
-  // });
-}
-
-function removeAvaiability() {
-  index = currentItemIndex;
-  let from = $("#fromInput").val();
-  let to = $("#toInput").val();
-  let itemId = $(`#item${index}Id`).val().trim();
-  let avaiability = {
-    from: from,
-    to: to,
-    itemId: itemId,
-  };
-  console.log(
-    "Procedo ad aggiungere l'avaiabilità: " + JSON.stringify(avaiability)
-  );
-  // $.ajax({
-  //   url: localhost + "/v1/avaiabilities",
-  //   type: "POST",
-  //   data: { avaiability },
-  //   dataType: "json",
-  //   contentType: "application/x-www-form-urlencoded",
-  //   success: function (data) {
-  //     console.log("Avaiabilità aggiunta");
-  //     $("#AvaiabilityModal").modal("hide");
-  //     location.reload();
-  //   },
-  //   error: function (data) {
-  //   console.log("Errore nell'aggiunta della disponibilità");
-  //   $("#AvaiabilityModal").modal("hide");
-  // },
-  // });
+  $.ajax({
+    url: localhost + "/v1/items/" + itemId,
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
+    success: function (data) {
+      item = data;
+      item.discountsWeekday = discounts;
+      delete item.id;
+      delete item.totalPrice;
+      console.log(data);
+      $.ajax({
+        url: localhost + "/v1/items/" + itemId,
+        type: "PATCH",
+        headers: {
+          Authorization: "Bearer " + getToken(),
+        },
+        data: data,
+        success: function (data) {
+          $("#WeekDayDiscountModal").modal("hide");
+          location.reload();
+        },
+      });
+    },
+  });
 }

@@ -24,8 +24,6 @@
     <!--JQuery CDN-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <!-- JQuery UI DatePicker IT
-    <script type="text/javascript" src="/js/datepickerIT.js"></script> -->
 
     <!-- JQuery UI CDN -->
     <!-- This parts is used for the price slider -->
@@ -308,7 +306,8 @@
                   <th scope="col">Responsabile</th>
                   <th scope="col">Oggetto</th>
                   <th scope="col">Stato</th>
-                  <th scope="col">Dal - Al</th>
+                  <th scope="col">Dal</th>
+                  <th scope="col">Al</th>
                   <th scope="col">Restituzione</th>
                   <th scope="col">Punti Usati(€)</th>
                   <th scope="col">Spesa Di Base(€)</th>
@@ -533,31 +532,237 @@
     </div>
   </div>
 
-  <!-- Modale Disponibilità -->
-  <div class="modal fade" id="AvaiabilityModal" role="dialog" role="dialog" aria-hidden="true">
+  <!-- Modale WeekDays -->
+  <div class="modal fade" id="WeekDayDiscountModal" role="dialog" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content modalDiv">
-        <div class=" card-body bg-white text-black" id="AvaiabilityCard" aria-label="Avaiability Card">
+        <div class=" card-body bg-white text-black" id="WeekDayDiscountCard" aria-label="WeekDayDiscount Card">
           <div class="closeButton">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
           </div>
-          <div>
-            <h1 id="in-Disponibilità"></h1>
-            <form>
-              <div class="form-group">
-                <label class="disponibilityLabel" for="fromInput">Dal:</label>
-                <input type="date" class="form-control" id="fromInput" placeholder="Inserire Data Inizio">
+          <div id="weekdayDiscountsContent">
+            <h2>Sconti In Base al Giorno</h2>
+            <div id="weekdayDiscount1" class="weekDayBlock">
+              <h3>Primo Periodo</h3>
+              <div id="discount1" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate1">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate1"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate1">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate1"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
               </div>
-              <div class="form-group">
-                <label class="disponibilityLabel" for="toInput">Al:</label>
-                <input type="date" class="form-control" id="toInput" placeholder="Inserire Data Fine">
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek1">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek1"
+                  placeholder="Descrizione sconto">
               </div>
-              <button class="btn btn-dark m-1" type="button" id="avaiabilityButton" onclick="addAvaiability()"
-                aria-label="add-avaiability">Rendi Disponibile</button>
-              <button class="btn btn-dark m-1" type="button" id="unavaiabilityButton" onclick="removeAvaiability()"
-                aria-label="remove-avaiability">Rendi
-                Indisponibile</button>
-            </form>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek1">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek1"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount2" class="weekDayBlock">
+              <h3>Secondo Periodo</h3>
+              <div id="discount2" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate2">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate2"
+                    placeholder="Inserire percentuale sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate2">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate2"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek2">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek2"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek2">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek2"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount3" class="weekDayBlock">
+              <h3>Terzo Periodo</h3>
+              <div id="discount3" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate3">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate3"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate3">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate3"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek3">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek3"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek3">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek3"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount4" class="weekDayBlock">
+              <h3>Quarto Periodo</h3>
+              <div id="discount4" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate4">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate4"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate4">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate4"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek4">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek4"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek4">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek4"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount5" class="weekDayBlock">
+              <h3>Quinto Periodo</h3>
+              <div id="discount5" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate5">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate5"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate5">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate5"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek5">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek5"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek5">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek5"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount6" class="weekDayBlock">
+              <h3>Sesto Periodo</h3>
+              <div id="discount6" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate6">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate6"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate6">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate6"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek6">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek6"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek6">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek6"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+            <div id="weekdayDiscount7" class="weekDayBlock">
+              <h3>Settimo Periodo</h3>
+              <div id="discount7" class="weekDayDiscount">
+                <div class="dateInput">
+                  <label class="inputLabel" for="startDate7">Data di Inizio Sconto</label>
+                  <input type="number" max="6" class="form-control" id="startDate7"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+                <div class="dateInput">
+                  <label class="inputLabel" for="endDate7">Data di Fine Sconto</label>
+                  <input type="number" max="6" class="form-control" id="endDate7"
+                    placeholder="Inserire Data di Inizio Sconto">
+                </div>
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="descriptionWeek7">Descrizione sconto</label>
+                <input type="text" class="form-control paddingInput" id="descriptionWeek7"
+                  placeholder="Descrizione sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="amountWeek7">Quantità sconto (in %)</label>
+                <input type="number" class="form-control paddingInput" id="amountWeek7"
+                  placeholder="Inserire percentuale sconto">
+              </div>
+            </div>
+
+            <button class="btn btn-info discountButton" onclick="addWeekDayDiscounts()">Aggiungi Periodo di
+              Sconto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale DatesRange -->
+  <div class="modal fade" id="DatesRangeDiscountModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="DatesRangeDiscountCard" aria-label="DatesRangeDiscount Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div id="datesRangeDiscountsExisting">
+            <h2>Sconti Esistenti</h2>
+            <div id="existingDiscounts">
+            </div>
+          </div>
+          <div id="datesRangeDiscountsContent">
+            <h2>Sconti Settimanali</h2>
+            <div id="datesRangeDiscount">
+              <div class="dateInput">
+                <label class="inputLabel" for="monday">Data di Inizio Sconto</label>
+                <input type="date" class="form-control" id="startDate" placeholder="Inserire Data di Inizio Sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="endDate">Data di Fine Sconto</label>
+                <input type="date" class="form-control" id="endDate" placeholder="Inserire Data di Inizio Sconto">
+              </div>
+            </div>
+            <div class="dateInput">
+              <label class="inputLabel" for="startDate">Descrizione sconto</label>
+              <input type="text" class="form-control paddingInput" id="descriptionWeek"
+                placeholder="Descrizione sconto">
+            </div>
+            <div class="dateInput">
+              <label class="inputLabel" for="startDate">Quantità sconto (in %)</label>
+              <input type="number" class="form-control paddingInput" id="amountWeek"
+                placeholder="Inserire Data di Inizio Sconto">
+            </div>
+            <button class="btn btn-info discountButton" onclick="">Aggiungi Periodo di
+              Sconto</button>
           </div>
         </div>
       </div>
