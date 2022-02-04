@@ -103,7 +103,6 @@ function loginFromItemRequired() {
 }
 
 function login() {
-  console.log("Procedo ad eseguire il login");
   let email = $("#email").val();
   let pass = $("#password").val();
   let credentials = {
@@ -116,7 +115,6 @@ function login() {
     data: credentials,
     dataType: "json",
     success: function (data) {
-      console.log(data.user.role);
       if (data.user.role == "user") {
         $("#LoginModal").modal("hide");
         alert("Non sei autorizzato ad accedere a questa pagina");
@@ -131,7 +129,6 @@ function login() {
 }
 
 function logout() {
-  console.log("Procedo ad eseguire il logout");
   $.ajax({
     url: localhost + "/v1/auth/logout",
     type: "POST",
@@ -143,12 +140,10 @@ function logout() {
     },
     success: function (data) {
       deleteTokens();
-      console.log("Logout Eseguito");
       location.reload();
     },
     error: function (err) {
       alert("Errore durante il logout");
-      console.log(err.responseText);
     },
   });
 }
@@ -189,7 +184,6 @@ function allowStateFilter() {
 
 /* User Anagraphic */
 function userAnagraphic() {
-  console.log("Procedo a recuperare i dati degli utenti");
   $.ajax({
     url: localhost + "/v1/users",
     type: "GET",
@@ -257,7 +251,6 @@ function userAnagraphic() {
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
-      console.log(res.responseText);
     },
   });
   $("#UserAnagraphicModal").modal("show");
@@ -265,7 +258,6 @@ function userAnagraphic() {
 
 /* User Handling */
 function editUser(index) {
-  console.log("Procedo ad editare l'utente");
   let id = $(`#client${index}Id`).val().trim();
   let username = $(`#client${index}Username`).val().trim();
   let name = $(`#client${index}Name`).val();
@@ -290,7 +282,6 @@ function editUser(index) {
     },
     error: function (res) {
       alert("Errore durante la modifica dell'utente");
-      console.log(res.responseText);
     },
   });
 }
@@ -298,7 +289,6 @@ function editUser(index) {
 function removeUser(index) {
   let id = $(`#client${index}Id`).val().trim();
   if (id != getLoggedAdminId()) {
-    console.log("Procedo a rimuovere l'utente con id: " + id);
     filters = {
       user: id,
       state: "Ongoing",
@@ -311,7 +301,6 @@ function removeUser(index) {
       },
       data: filters,
       success: function (res) {
-        console.log("Ci sono " + res.results.length + " noleggi attivi");
         ongoingLength = res.results.length;
         if (ongoingLength == 0) {
           rentals = res.results;
@@ -324,9 +313,6 @@ function removeUser(index) {
             },
             data: filters,
             success: function (res) {
-              console.log(
-                "Ci sono " + res.results.length + " noleggi prenotati"
-              );
               bookedLength = res.results.length;
               rentals = res.results;
               if (bookedLength == 0) {
@@ -341,7 +327,6 @@ function removeUser(index) {
                   },
                   error: function (res) {
                     alert("Errore durante la rimozione dell'utente");
-                    console.log(res.responseText);
                   },
                 });
               } else {
@@ -353,7 +338,6 @@ function removeUser(index) {
             },
             error: function (res) {
               alert("Errore durante la ricerca dei noleggi prenotati");
-              console.log(res.responseText);
             },
           });
         } else {
@@ -363,7 +347,6 @@ function removeUser(index) {
       },
       error: function (res) {
         alert("Errore durante la ricerca dei noleggi in corso");
-        console.log(res.responseText);
       },
     });
   } else {
@@ -380,7 +363,6 @@ function addUserAnnotationsPopUp(index) {
 }
 
 function addUserAnnotations() {
-  console.log("Aggiungo le annotazioni");
   let index = currentNotationIndex;
   let id = $(`#client${index}Id`).val().trim();
   let rawAnnotations = $("#userAnnotations").find(":selected");
@@ -406,13 +388,11 @@ function addUserAnnotations() {
     },
     error: function (res) {
       alert("Errore durante l'aggiunta delle annotazioni");
-      console.log(res.responseText);
     },
   });
 }
 
 function showUserAnnotations(index) {
-  console.log("Mostro le annotazioni");
   let id = $(`#client${index}Id`).val().trim();
   $("#UserAnagraphicModal").modal("hide");
   $("#ShowAnnotationsModal").modal("show");
@@ -436,7 +416,6 @@ function showUserAnnotations(index) {
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
-      console.log(res.responseText);
     },
   });
 }
@@ -449,7 +428,6 @@ function addRentalAnnotationsPopUp(index) {
 }
 
 function addRentalAnnotations() {
-  console.log("Aggiungo le annotazioni");
   let index = currentNotationIndex;
   let id = $(`#rental${index}Id`).val().trim();
   let rawAnnotations = $("#rentalAnnotations").find(":selected");
@@ -475,13 +453,11 @@ function addRentalAnnotations() {
     },
     error: function (res) {
       alert("Errore durante l'aggiunta delle annotazioni");
-      console.log(res.responseText);
     },
   });
 }
 
 function showRentalAnnotations(index) {
-  console.log("Mostro le annotazioni");
   let id = $(`#rental${index}Id`).val().trim();
   $("#UserRentalsModal").modal("hide");
   $("#ShowAnnotationsModal").modal("show");
@@ -510,10 +486,9 @@ function showRentalAnnotations(index) {
 }
 
 /* Helpful functions for the rentals */
-function getDaysDistance(start, end) {
+function getDaysDistance(start, end, returnal = false) {
   let days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 3600 * 24));
-  console.log(days);
-  if (days != 0) days++;
+  if (!returnal) days++;
   return days;
 }
 
@@ -694,9 +669,7 @@ function appendAllItemAdmin(id) {
 
 /* User Rentals */
 function showUserRentals(index) {
-  console.log(getLoggedAdminId());
   if (getLoggedAdminId()) {
-    console.log("Mostro i noleggi dell'utente");
     let id = $(`#client${index}Id`).val().trim();
     $("#UserAnagraphicModal").modal("hide");
     $("#ShowRentalsModal").modal("show");
@@ -710,7 +683,6 @@ function showUserRentals(index) {
 
 function showItemRentals(index) {
   if (getLoggedAdminId()) {
-    console.log("Mostro i noleggi dell'oggetto");
     let id = $(`#item${index}Id`).val().trim();
     $("#ItemsModal").modal("hide");
     $("#ShowRentalsModal").modal("show");
@@ -745,7 +717,6 @@ function insertRentalActions(index, state) {
 
 function editRowRental(index) {
   let key = index != undefined ? index : "Input";
-  console.log("Completo i campi del noleggio");
   let item = $(`#rental${key}Item`).val();
   let user = $(`#rental${key}UserId`).val();
   let start = $(`#rental${key}StartDate`).val();
@@ -778,7 +749,6 @@ function editRowRental(index) {
     },
     data: data,
     success: function (res) {
-      console.log(res);
       base = res.base;
       loyalty = res.loyalty;
       surcharge = res.surcharge;
@@ -885,7 +855,6 @@ function changeReturnDate() {
 function showRentals(fromUser, userId, fromItem, itemId) {
   let index = 0;
   let tbody = $("#RentalsBody").empty();
-  console.log("Recupero gli utenti");
   $.ajax({
     url: localhost + "/v1/users",
     type: "GET",
@@ -896,9 +865,10 @@ function showRentals(fromUser, userId, fromItem, itemId) {
       sortBy: "username:asc",
     },
     success: function (res) {
-      admins = res.results.filter((user) => user.role == "backoffice");
+      admins = res.results.filter(
+        (user) => user.role == "backoffice" || user.role == "manager"
+      );
       users = res.results;
-      console.log("Recupero gli oggetti");
       $.ajax({
         url: localhost + "/v1/items",
         type: "GET",
@@ -907,7 +877,6 @@ function showRentals(fromUser, userId, fromItem, itemId) {
         },
         success: function (items) {
           states = elaborateStates(fromUser, userId, fromItem, itemId);
-          console.log(states);
           if (states.length != 1 || states[0] != "Returned")
             tbody.append(createNewRentalFromRow(userId, items, itemId));
           filters = {
@@ -915,7 +884,6 @@ function showRentals(fromUser, userId, fromItem, itemId) {
           };
           filters = userId ? { ...filters, user: userId } : filters;
           filters = itemId ? { ...filters, item: itemId } : filters;
-          console.log("Recupero i noleggi");
           for (let state of states) {
             setTimeout(function () {
               filters.state = state;
@@ -928,7 +896,6 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                 data: filters,
                 success: function (res) {
                   rentals = res.results;
-                  console.log(rentals);
                   for (let r of rentals) {
                     let rentalId = r.id;
                     let rentalUser = r.user != null ? r.user.id : "";
@@ -1086,7 +1053,6 @@ function createNewRentalFromRow(userId, items, itemId) {
 }
 
 function postRentalFromRow() {
-  console.log("Completo i campi del noleggio");
   let item = $(`#rentalInputItem`).val();
   let user = $(`#rentalInputUserId`).val();
   let state = $(`#rentalInputState`).val();
@@ -1129,7 +1095,6 @@ function postRentalFromRow() {
 }
 
 function editRental(index) {
-  console.log("Completo i campi del noleggio");
   let rentalId = $(`#rental${index}Id`).val();
   let item = $(`#rental${index}Item`).val();
   let user = $(`#rental${index}UserId`).val();
@@ -1172,7 +1137,6 @@ function editRental(index) {
 
 function removeRental(index) {
   let id = $(`#rental${index}Id`).val().trim();
-  console.log("Procedo a rimuovere il noleggio con id: " + id);
   $.ajax({
     url: localhost + `/v1/rentals/${id}`,
     type: "DELETE",
@@ -1184,7 +1148,6 @@ function removeRental(index) {
     },
     error: function (res) {
       alert("Errore durante la ricerca dei noleggi in corso");
-      console.log(res.responseText);
     },
   });
 }
@@ -1197,7 +1160,7 @@ function getRentalBill(index) {
   let end = $(`#rental${index}EndDate`).val().trim();
   let days = getDaysDistance(start, end);
   let returnDate = $(`#rental${index}ReturnDate`).val().trim();
-  let lateDays = getDaysDistance(end, returnDate);
+  let lateDays = getDaysDistance(end, returnDate, true);
   let baseCost = $(`#rental${index}BaseCost`).val().trim();
   let points = $(`#rental${index}Points`).val().trim();
   let discount = $(`#rental${index}Discount`).val().trim();
@@ -1303,7 +1266,6 @@ function searchItems() {
   filters = category != "" ? { ...filters, category: category } : filters;
   filters = brand != "" ? { ...filters, brand: brand } : filters;
   filters = state != "" ? { ...filters, state: state } : filters;
-  console.log("Recupero gli items");
   $.ajax({
     url: localhost + "/v1/items",
     type: "GET",
@@ -1391,7 +1353,6 @@ function searchItems() {
     },
     error: function (err) {
       alert("Errore nel recupero degli items");
-      console.log(err.responseText);
     },
   });
   $("#InventoryModal").modal("hide");
@@ -1411,7 +1372,6 @@ function insertNewItem() {
     discount: $("#discountInput").val(),
     enabled: $("#enabledInput").val(),
   };
-  console.log("Recupero gli items");
   $.ajax({
     url: localhost + "/v1/items",
     type: "POST",
@@ -1425,7 +1385,6 @@ function insertNewItem() {
     },
     error: function (err) {
       alert("Errore nell'inserimento dell'item");
-      console.log(err.responseText);
     },
   });
 }
@@ -1451,7 +1410,6 @@ function editItem(index) {
     discount: $("#item" + index + "Discount").val(),
     enabled: $("#item" + index + "Enable").val() == "true",
   };
-  console.log("Aggiorno l'item");
   $.ajax({
     url: localhost + "/v1/items/" + id,
     type: "PATCH",
@@ -1465,14 +1423,12 @@ function editItem(index) {
     },
     error: function (err) {
       alert("Errore nella modifica dell'item");
-      console.log(err.responseText);
     },
   });
 }
 
 function removeItem(index) {
   let itemId = $("#item" + index + "Id").val();
-  console.log("Recupero i noleggi dell'item");
   $.ajax({
     url: localhost + "/v1/rentals/",
     type: "GET",
@@ -1577,7 +1533,6 @@ function showWeekDayDiscountModal(id) {
       html = "";
       discounts = data.discountsWeekday;
       for (discount of discounts) {
-        console.log(discount);
         $("#startDate" + (discounts.indexOf(discount) + 1)).val(discount.from);
         $("#endDate" + (discounts.indexOf(discount) + 1)).val(discount.to);
         $("#amountWeek" + (discounts.indexOf(discount) + 1)).val(
@@ -1664,7 +1619,6 @@ function addWeekDayDiscounts() {
       item.discountsWeekday = discounts;
       delete item.id;
       delete item.totalPrice;
-      console.log(data);
       $.ajax({
         url: localhost + "/v1/items/" + itemId,
         type: "PATCH",
