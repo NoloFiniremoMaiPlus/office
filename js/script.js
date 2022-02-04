@@ -4,7 +4,7 @@ let currentNotationIndex = -1;
 let currentItemIndex = -1;
 let currentItemId = -1;
 let allItems = [];
-let localhost = "https://192.168.1.9:8443";
+let localhost = "https://site202132.tw.cs.unibo.it";
 let surchargeTax = 1.5;
 let minCost = 0;
 let maxCost = 100;
@@ -212,6 +212,7 @@ function userAnagraphic() {
         let email = u.email;
         let phone = u.phone;
         let loyalties = u.loyalty;
+        let role = u.role;
         let tr = document.createElement("tr");
         tr.innerHTML = `
         <td class="ClientData hidden">
@@ -234,6 +235,9 @@ function userAnagraphic() {
           </td>
           <td class="ClientData">
             <input type="text" class="form-control" id="client${index}Loyalty" value="${loyalties}" disabled>
+          </td>
+          <td class="ClientData">
+            <input type="text" class="form-control" id="client${index}Role" value="${role}" disabled>
           </td>
           <td class="ClientData actionBar">
             <div>
@@ -1400,7 +1404,6 @@ function insertNewItem() {
     name: $("#nameInput").val(),
     description: $("#descriptionInput").val(),
     category: $("#categoryInput").val(),
-    resp: $("#adminInput").val(),
     brand: $("#brandInput").val(),
     state: $("#stateInput").val(),
     basePrice: $("#baseCostInput").val(),
