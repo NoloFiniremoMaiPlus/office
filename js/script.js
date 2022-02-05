@@ -1478,7 +1478,6 @@ function removeItem(index) {
 
 function showDatesRangeDiscountModal(id) {
   $("#ItemsModal").modal("hide");
-  $("#DatesRangeDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1488,6 +1487,7 @@ function showDatesRangeDiscountModal(id) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
+      $("#DatesRangeDiscountModal").modal("show");
       html = "";
       discounts = data.discountsDate;
       for (discount of discounts) {
@@ -1520,7 +1520,6 @@ function showDatesRangeDiscountModal(id) {
 
 function showWeekDayDiscountModal(id) {
   $("#ItemsModal").modal("hide");
-  $("#WeekDayDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1530,6 +1529,7 @@ function showWeekDayDiscountModal(id) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
+      $("#WeekDayDiscountModal").modal("show");
       html = "";
       discounts = data.discountsWeekday;
       for (discount of discounts) {
