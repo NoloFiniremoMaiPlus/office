@@ -737,7 +737,7 @@
             <h2>Sconti Settimanali</h2>
             <div id="datesRangeDiscount">
               <div class="dateInput">
-                <label class="inputLabel" for="monday">Data di Inizio Sconto</label>
+                <label class="inputLabel" for="startDate">Data di Inizio Sconto</label>
                 <input type="date" class="form-control" id="startDate" placeholder="Inserire Data di Inizio Sconto">
               </div>
               <div class="dateInput">
@@ -746,16 +746,16 @@
               </div>
             </div>
             <div class="dateInput">
-              <label class="inputLabel" for="startDate">Descrizione sconto</label>
-              <input type="text" class="form-control paddingInput" id="descriptionWeek"
+              <label class="inputLabel" for="descriptionRange">Descrizione sconto</label>
+              <input type="text" class="form-control paddingInput" id="descriptionRange"
                 placeholder="Descrizione sconto">
             </div>
             <div class="dateInput">
-              <label class="inputLabel" for="startDate">Quantità sconto (in %)</label>
-              <input type="number" class="form-control paddingInput" id="amountWeek"
+              <label class="inputLabel" for="amountRange">Quantità sconto (in %)</label>
+              <input type="number" class="form-control paddingInput" id="amountRange"
                 placeholder="Inserire Data di Inizio Sconto">
             </div>
-            <button class="btn btn-info discountButton" onclick="">Aggiungi Periodo di
+            <button class="btn btn-info discountButton" onclick="addRangeDiscount()">Aggiungi Periodo di
               Sconto</button>
           </div>
         </div>

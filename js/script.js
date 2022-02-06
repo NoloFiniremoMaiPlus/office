@@ -1275,6 +1275,7 @@ function searchItems() {
       Authorization: "Bearer " + getToken(),
     },
     success: function (res) {
+      console.log(res.results);
       items = res.results;
       for (let i of items) {
         index = items.indexOf(i);
@@ -1476,8 +1477,9 @@ function removeItem(index) {
   });
 }
 
-function showDatesRangeDiscountModal(id) {
+function showDatesRangeDiscountModal(index) {
   $("#ItemsModal").modal("hide");
+  $("#DatesRangeDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1487,7 +1489,6 @@ function showDatesRangeDiscountModal(id) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
-      $("#DatesRangeDiscountModal").modal("show");
       html = "";
       discounts = data.discountsDate;
       for (discount of discounts) {
@@ -1518,8 +1519,9 @@ function showDatesRangeDiscountModal(id) {
   });
 }
 
-function showWeekDayDiscountModal(id) {
+function showWeekDayDiscountModal(index) {
   $("#ItemsModal").modal("hide");
+  $("#WeekDayDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1529,7 +1531,6 @@ function showWeekDayDiscountModal(id) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
-      $("#WeekDayDiscountModal").modal("show");
       html = "";
       discounts = data.discountsWeekday;
       for (discount of discounts) {
@@ -1607,7 +1608,6 @@ function addWeekDayDiscounts() {
       discounts.push(discount);
     }
   }
-
   $.ajax({
     url: localhost + "/v1/items/" + itemId,
     type: "GET",
@@ -1617,18 +1617,21 @@ function addWeekDayDiscounts() {
     success: function (data) {
       item = data;
       item.discountsWeekday = discounts;
-      delete item.id;
-      delete item.totalPrice;
       $.ajax({
         url: localhost + "/v1/items/" + itemId,
         type: "PATCH",
         headers: {
           Authorization: "Bearer " + getToken(),
         },
-        data: data,
+        data: {
+          discountsWeekday: discounts,
+        },
         success: function (data) {
           $("#WeekDayDiscountModal").modal("hide");
           location.reload();
+        },
+        error: function (err) {
+          console.log(err);
         },
       });
     },
