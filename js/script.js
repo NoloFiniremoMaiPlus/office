@@ -5,7 +5,6 @@ let currentItemIndex = -1;
 let currentItemId = -1;
 let allItems = [];
 let localhost = "https://site202132.tw.cs.unibo.it";
-let surchargeTax = 1.5;
 let minCost = 0;
 let maxCost = 100;
 
@@ -508,10 +507,6 @@ function elaborateDiscount(
   );
 }
 
-function elaborateSurcharge(basePrice, dailyPrice, daysNumber) {
-  return parseInt(dailyPrice * daysNumber * surchargeTax);
-}
-
 function elaborateTotalCost(baseCost, discount, loyalty, surcharge) {
   total = parseInt(baseCost - discount - loyalty + surcharge);
   return total >= 0 ? total : 0;
@@ -681,6 +676,7 @@ function showUserRentals(index) {
   }
 }
 
+/* Item Rentals */
 function showItemRentals(index) {
   if (getLoggedAdminId()) {
     let id = $(`#item${index}Id`).val().trim();
@@ -694,6 +690,7 @@ function showItemRentals(index) {
   }
 }
 
+/* Rentals rows functions */
 function insertRentalActions(index, state) {
   if (state == "Returned") {
     $("#rentalEdit" + index).hide();
@@ -777,6 +774,7 @@ function elaborateStates(fromUser, userId, fromItem, itemId) {
   return states;
 }
 
+/* Dates functions */
 function changeDates() {
   let today = new Date();
   let tomorrow = new Date();
@@ -852,6 +850,7 @@ function changeReturnDate() {
   $(`#rentalInputReturnDate`).datepicker("option", "minDate", minDate);
 }
 
+/* Rentals Functions */
 function showRentals(fromUser, userId, fromItem, itemId) {
   let index = 0;
   let tbody = $("#RentalsBody").empty();
@@ -1152,6 +1151,7 @@ function removeRental(index) {
   });
 }
 
+/* Bill Function */
 function getRentalBill(index) {
   let id = $(`#rental${index}Id`).val().trim();
   let user = $(`#rental${index}UserId option:selected`).text().trim();
@@ -1250,6 +1250,8 @@ function changeIcon() {
   let icon = $(`#item${index}Image`).val().trim();
   $(`#item${index}Icon`).attr("src", icon);
 }
+
+/* Items Function */
 
 function searchItems() {
   let tbody = $("#ItemsBody").empty();
@@ -1476,6 +1478,8 @@ function removeItem(index) {
     },
   });
 }
+
+/* Discounts */
 
 function showDatesRangeDiscountModal(index) {
   $("#ItemsModal").modal("hide");

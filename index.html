@@ -119,6 +119,160 @@
       </div>
     </div>
 
+    <!-- Modale Clienti -->
+    <div class="modal fade" id="UserAnagraphicModal" role="dialog" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content modalDiv">
+          <div class=" card-body bg-white text-black" id="UserAnagraphicCard" aria-label="User Anagraphic Card">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+            </div>
+            <div>
+              <table>
+                <caption>
+                  <p id="usersCaption">Anagrafica Clienti</p>
+                </caption>
+                <thead>
+                  <tr>
+                    <!-- <th scope="col">Id</th> -->
+                    <th scope="col">Username</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Cognome</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Telefono</th>
+                    <th scope="col">Punti Fedeltà</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Azione</th>
+                  </tr>
+                </thead>
+                <tbody id="ADBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Annotazioni  -->
+
+    <!-- Modale Aggiunta Annotazioni Utente -->
+    <div class="modal fade" id="AddUserAnnotationsModal" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="card-body annotationsBg text-dark text-center" id="userAnnotationsModal"
+            aria-label="Add User Annotations Card">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+            </div>
+            <div>
+              <h3 class="cardTitle">Inserisci annotazioni cliente</h3>
+            </div>
+            <div>
+              <form id="annotationsForm" class="text-center">
+                <div class="form-outline formatAnnotations">
+                  <label class="form-label bold underline" for="userAnnotations">Seleziona</label>
+                  <select name="userAnnotations" class="annotationsLabels bg-light text-center" id="userAnnotations"
+                    multiple>
+                    <option value="Educato">Educato</option>
+                    <option value="Puntuale">Puntuale</option>
+                    <option value="Non rompe nulla">Non rompe nulla</option>
+                    <option value="Pagamenti puntuali">Pagamenti puntuali</option>
+                    <option value="Maleducato">Maleducato</option>
+                    <option value="Ritardatario">Ritardatario</option>
+                    <option value="Rompe gli oggetti">Rompe gli oggetti</option>
+                    <option value="Pagamenti in ritardo">Pagamenti in ritardo</option>
+                    <option value="Solo top di gamma">Solo top di gamma</option>
+                    <option value="Basta che funzioni">Basta che funzioni</option>
+                    <option value="Tutto rgb">Solo rgb</option>
+                    <option value="Solo pagamenti con carta">Non usa i contanti</option>
+                    <option value="Solo pagamenti in contanti">Non ha una carta di credito</option>
+                  </select>
+                </div>
+                <div class="form-outline form-white mb-4 formatAnnotations column">
+                  <label class="form-label bold underline" for="userComment">Annotazione Libera</label>
+                  <textarea placeholder="Inserisci commento"
+                    class="form-control bg-light form-control-lg comment text-center" id="userComment"
+                    rows="5"></textarea>
+                </div>
+                <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
+                  onclick="addUserAnnotations()" aria-label="submit-annotations">Inserisci</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale Aggiunta Annotazioni Noleggio -->
+    <div class="modal fade" id="AddRentalAnnotationsModal" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="card-body annotationsBg text-dark" id="rentalAnnotationsModal"
+            aria-label="Add Rental Annotations Card">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+            </div>
+            <div>
+              <h3 class="cardTitle">Inserisci annotazioni noleggio</h3>
+            </div>
+            <div>
+              <form id="annotationsForm" class="text-center">
+                <div class="form-outline formatAnnotations">
+                  <label class="form-label bold underline" for="rentalAnnotations">Seleziona</label>
+                  <select name="rentalAnnotations" class="annotationsLabels bg-light text-center" id="rentalAnnotations"
+                    multiple>
+                    <option value="Con Penale">Con Penale</option>
+                    <option value="Con Sconto">Con Sconto</option>
+                    <option value="Consegna Anticipata">Consegna Anticipata</option>
+                    <option value="Consegna Prevista">Consegna Prevista</option>
+                    <option value="Consegna Posticipata">Consegna Posticipata</option>
+                    <option value="Oggetto Integro">Oggetto Integro</option>
+                    <option value="Oggetto Danneggiato">Oggetto Danneggiato</option>
+                    <option value="Oggetto Distrutto">Oggetto Distrutto</option>
+                    <option value="Oggetto Perso">Oggetto Perso</option>
+                  </select>
+                </div>
+                <div class="form-outline form-lg mb-4 formatAnnotations column">
+                  <label class="form-label bold underline" for="rentalComment">Annotazione Libera</label>
+                  <textarea placeholder="Inserisci commento"
+                    class="form-control form-control-lg bg-light comment text-center" id="rentalComment"
+                    rows="5"></textarea>
+                </div>
+                <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
+                  onclick="addRentalAnnotations()" aria-label="submit-annotations">Inserisci</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale Mostra Annotazioni -->
+    <div class="modal fade" id="ShowAnnotationsModal" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="card-body bg-light text-dark" aria-label="User Table Card">
+            <div class="closeButton">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+            </div>
+            <div>
+              <h3 class="cardTitle">Annotazioni</h3>
+              <div class="form-outline form-white mb-4 showAnnotations">
+                <label class="form-label bold" for="features">Caratteristiche</label>
+                <ul id="features" class="text-center">
+                </ul>
+              </div>
+              <div class="form-outline form-white mb-4 showAnnotations">
+                <label class="form-label bold" for="commenti">Commento Manager</label>
+                <p class="list-group-item list-group-item-dark text-center" id="commenti"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clienti & Noleggi -->
+
     <!-- Modale Permessi -->
     <div class="modal fade" id="LoginRequiredModal" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
@@ -136,156 +290,6 @@
       </div>
     </div>
   </body>
-
-  <!-- Modale Clienti -->
-  <div class="modal fade" id="UserAnagraphicModal" role="dialog" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content modalDiv">
-        <div class=" card-body bg-white text-black" id="UserAnagraphicCard" aria-label="User Anagraphic Card">
-          <div class="closeButton">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
-          </div>
-          <div>
-            <table>
-              <caption>
-                <p id="usersCaption">Anagrafica Clienti</p>
-              </caption>
-              <thead>
-                <tr>
-                  <!-- <th scope="col">Id</th> -->
-                  <th scope="col">Username</th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Cognome</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Telefono</th>
-                  <th scope="col">Punti Fedeltà</th>
-                  <th scope="col">Role</th>
-                  <th scope="col">Azione</th>
-                </tr>
-              </thead>
-              <tbody id="ADBody">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale Aggiunta Annotazioni Utente -->
-  <div class="modal fade" id="AddUserAnnotationsModal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="card-body annotationsBg text-dark text-center" id="userAnnotationsModal"
-          aria-label="Add User Annotations Card">
-          <div class="closeButton">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
-          </div>
-          <div>
-            <h3 class="cardTitle">Inserisci annotazioni cliente</h3>
-          </div>
-          <div>
-            <form id="annotationsForm" class="text-center">
-              <div class="form-outline formatAnnotations">
-                <label class="form-label bold underline" for="userAnnotations">Seleziona</label>
-                <select name="userAnnotations" class="annotationsLabels bg-light text-center" id="userAnnotations"
-                  multiple>
-                  <option value="Educato">Educato</option>
-                  <option value="Puntuale">Puntuale</option>
-                  <option value="Non rompe nulla">Non rompe nulla</option>
-                  <option value="Pagamenti puntuali">Pagamenti puntuali</option>
-                  <option value="Maleducato">Maleducato</option>
-                  <option value="Ritardatario">Ritardatario</option>
-                  <option value="Rompe gli oggetti">Rompe gli oggetti</option>
-                  <option value="Pagamenti in ritardo">Pagamenti in ritardo</option>
-                  <option value="Solo top di gamma">Solo top di gamma</option>
-                  <option value="Basta che funzioni">Basta che funzioni</option>
-                  <option value="Tutto rgb">Solo rgb</option>
-                  <option value="Solo pagamenti con carta">Non usa i contanti</option>
-                  <option value="Solo pagamenti in contanti">Non ha una carta di credito</option>
-                </select>
-              </div>
-              <div class="form-outline form-white mb-4 formatAnnotations column">
-                <label class="form-label bold underline" for="userComment">Annotazione Libera</label>
-                <textarea placeholder="Inserisci commento"
-                  class="form-control bg-light form-control-lg comment text-center" id="userComment"
-                  rows="5"></textarea>
-              </div>
-              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
-                onclick="addUserAnnotations()" aria-label="submit-annotations">Inserisci</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale Aggiunta Annotazioni Noleggio -->
-  <div class="modal fade" id="AddRentalAnnotationsModal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="card-body annotationsBg text-dark" id="rentalAnnotationsModal"
-          aria-label="Add Rental Annotations Card">
-          <div class="closeButton">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
-          </div>
-          <div>
-            <h3 class="cardTitle">Inserisci annotazioni noleggio</h3>
-          </div>
-          <div>
-            <form id="annotationsForm" class="text-center">
-              <div class="form-outline formatAnnotations">
-                <label class="form-label bold underline" for="rentalAnnotations">Seleziona</label>
-                <select name="rentalAnnotations" class="annotationsLabels bg-light text-center" id="rentalAnnotations"
-                  multiple>
-                  <option value="Con Penale">Con Penale</option>
-                  <option value="Con Sconto">Con Sconto</option>
-                  <option value="Consegna Anticipata">Consegna Anticipata</option>
-                  <option value="Consegna Prevista">Consegna Prevista</option>
-                  <option value="Consegna Posticipata">Consegna Posticipata</option>
-                  <option value="Oggetto Integro">Oggetto Integro</option>
-                  <option value="Oggetto Danneggiato">Oggetto Danneggiato</option>
-                  <option value="Oggetto Distrutto">Oggetto Distrutto</option>
-                  <option value="Oggetto Perso">Oggetto Perso</option>
-                </select>
-              </div>
-              <div class="form-outline form-lg mb-4 formatAnnotations column">
-                <label class="form-label bold underline" for="rentalComment">Annotazione Libera</label>
-                <textarea placeholder="Inserisci commento"
-                  class="form-control form-control-lg bg-light comment text-center" id="rentalComment"
-                  rows="5"></textarea>
-              </div>
-              <button class="btn btn-outline-dark btn-dark px-5 bold maxWidth" type="button"
-                onclick="addRentalAnnotations()" aria-label="submit-annotations">Inserisci</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale Mostra Annotazioni -->
-  <div class="modal fade" id="ShowAnnotationsModal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="card-body bg-light text-dark" aria-label="User Table Card">
-          <div class="closeButton">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
-          </div>
-          <div>
-            <h3 class="cardTitle">Annotazioni</h3>
-            <div class="form-outline form-white mb-4 showAnnotations">
-              <label class="form-label bold" for="features">Caratteristiche</label>
-              <ul id="features" class="text-center">
-              </ul>
-            </div>
-            <div class="form-outline form-white mb-4 showAnnotations">
-              <label class="form-label bold" for="commenti">Commento Manager</label>
-              <p class="list-group-item list-group-item-dark text-center" id="commenti"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Modale Noleggi -->
   <div class="modal fade" id="UserRentalsModal" role="dialog" role="dialog" aria-hidden="true">
@@ -364,6 +368,8 @@
       </div>
     </div>
   </div>
+
+  <!-- Oggetti -->
 
   <!-- Modale Inventario -->
   <div class="modal fade" id="InventoryModal" role="dialog" role="dialog" aria-hidden="true">
@@ -512,7 +518,7 @@
               </div>
               <div class="form-group">
                 <label class="itemLabel" for="enabledInput">Disponibile:</label>
-                <select class="form-control">
+                <select class="form-control" id="enabledInput">
                   <option value="true">Si</option>
                   <option value="false">No</option>
                 </select>
@@ -520,6 +526,49 @@
               <button class="btn btn-dark m-1" type="button" id="itemButton" onclick="loginFromItemRequired()"
                 aria-label="add-item">Aggiungi</button>
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale DatesRange -->
+  <div class="modal fade" id="DatesRangeDiscountModal" role="dialog" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content modalDiv">
+        <div class=" card-body bg-white text-black" id="datesRangeDiscountCard" aria-label="DatesRangeDiscount Card">
+          <div class="closeButton">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
+          </div>
+          <div id="datesRangeDiscountsExisting">
+            <h2>Sconti Esistenti</h2>
+            <div id="existingDiscounts">
+            </div>
+          </div>
+          <div id="datesRangeDiscountsContent">
+            <h2>Sconti Settimanali</h2>
+            <div id="datesRangeDiscount">
+              <div class="dateInput">
+                <label class="inputLabel" for="startDate">Data di Inizio Sconto</label>
+                <input type="date" class="form-control" id="startDate" placeholder="Inserire Data di Inizio Sconto">
+              </div>
+              <div class="dateInput">
+                <label class="inputLabel" for="endDate">Data di Fine Sconto</label>
+                <input type="date" class="form-control" id="endDate" placeholder="Inserire Data di Inizio Sconto">
+              </div>
+            </div>
+            <div class="dateInput">
+              <label class="inputLabel" for="descriptionRange">Descrizione sconto</label>
+              <input type="text" class="form-control paddingInput" id="descriptionRange"
+                placeholder="Descrizione sconto">
+            </div>
+            <div class="dateInput">
+              <label class="inputLabel" for="amountRange">Quantità sconto (in %)</label>
+              <input type="number" class="form-control paddingInput" id="amountRange"
+                placeholder="Inserire Data di Inizio Sconto">
+            </div>
+            <button class="btn btn-info discountButton" onclick="addRangeDiscount()">Aggiungi Periodo di
+              Sconto</button>
           </div>
         </div>
       </div>
@@ -712,51 +761,8 @@
               </div>
             </div>
 
-            <button class="btn btn-info discountButton" onclick="addWeekDayDiscounts()">Aggiungi Periodo di
-              Sconto</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modale DatesRange -->
-  <div class="modal fade" id="DatesRangeDiscountModal" role="dialog" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content modalDiv">
-        <div class=" card-body bg-white text-black" id="DatesRangeDiscountCard" aria-label="DatesRangeDiscount Card">
-          <div class="closeButton">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close modal"></button>
-          </div>
-          <div id="datesRangeDiscountsExisting">
-            <h2>Sconti Esistenti</h2>
-            <div id="existingDiscounts">
-            </div>
-          </div>
-          <div id="datesRangeDiscountsContent">
-            <h2>Sconti Settimanali</h2>
-            <div id="datesRangeDiscount">
-              <div class="dateInput">
-                <label class="inputLabel" for="startDate">Data di Inizio Sconto</label>
-                <input type="date" class="form-control" id="startDate" placeholder="Inserire Data di Inizio Sconto">
-              </div>
-              <div class="dateInput">
-                <label class="inputLabel" for="endDate">Data di Fine Sconto</label>
-                <input type="date" class="form-control" id="endDate" placeholder="Inserire Data di Inizio Sconto">
-              </div>
-            </div>
-            <div class="dateInput">
-              <label class="inputLabel" for="descriptionRange">Descrizione sconto</label>
-              <input type="text" class="form-control paddingInput" id="descriptionRange"
-                placeholder="Descrizione sconto">
-            </div>
-            <div class="dateInput">
-              <label class="inputLabel" for="amountRange">Quantità sconto (in %)</label>
-              <input type="number" class="form-control paddingInput" id="amountRange"
-                placeholder="Inserire Data di Inizio Sconto">
-            </div>
-            <button class="btn btn-info discountButton" onclick="addRangeDiscount()">Aggiungi Periodo di
-              Sconto</button>
+            <button class="btn btn-info discountButton" onclick="addWeekDayDiscounts()">Aggiungi Sconti
+              Settimanali</button>
           </div>
         </div>
       </div>

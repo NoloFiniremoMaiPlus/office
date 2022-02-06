@@ -655,7 +655,9 @@ td input {
   border-radius: 1rem !important;
 }
 
-#DatesRangeDiscountCard {
+/* Discounts */
+
+#datesRangeDiscountCard {
   display: flex;
   flex-direction: column;
   justify-content: center;
