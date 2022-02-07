@@ -392,7 +392,6 @@ function addUserAnnotations() {
 function showUserAnnotations(index) {
   let id = $(`#client${index}Id`).val().trim();
   $("#UserAnagraphicModal").modal("hide");
-  $("#ShowAnnotationsModal").modal("show");
   $.ajax({
     url: localhost + `/v1/users/${id}`,
     type: "GET",
@@ -400,9 +399,10 @@ function showUserAnnotations(index) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (res) {
+      console.log(res);
       annotation = res.annotation;
-      notes = annotation.quick || [];
-      comment = annotation.text;
+      notes = annotation?.quick || [];
+      comment = annotation?.text || "";
       $("#commenti").empty().text(comment);
       $("#features").empty();
       for (let note of notes) {
@@ -410,6 +410,7 @@ function showUserAnnotations(index) {
           `<li class="list-group-item list-group-item-info">${note}</li>`
         );
       }
+      $("#ShowAnnotationsModal").modal("show");
     },
     error: function (res) {
       alert("Errore durante il recupero degli utenti");
