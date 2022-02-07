@@ -235,13 +235,13 @@ function userAnagraphic() {
           <td class="ClientData actionBar">
             <div>
               <div class="modalActions">
-                <button class="btn btn-primary bi bi-pencil-fill" onclick="editUser(${index})"></button>
-                <button class="btn btn-primary bi bi bi-bag-check" onclick="showUserRentals(${index})"></button>
-                <button class="btn btn-primary bi bi-x" onclick="removeUser(${index})"></button>
+                <button title="Edit" class="btn btn-primary bi bi-pencil-fill" onclick="editUser(${index})"></button>
+                <button title="Mostra Noleggi" class="btn btn-primary bi bi bi-bag-check" onclick="showUserRentals(${index})"></button>
+                <button title="Rimuovi" class="btn btn-primary bi bi-x" onclick="removeUser(${index})"></button>
               </div>
               <div class="modalActions">
-                <button class="btn btn-primary bi bi-card-text" onclick="addUserAnnotationsPopUp(${index})"></button>
-                <button class="btn btn-primary bi bi-list-task" onclick="showUserAnnotations(${index})"></button>
+                <button title="Aggiungi Note" class="btn btn-primary bi bi-card-text" onclick="addUserAnnotationsPopUp(${index})"></button>
+                <button title="Mostra Note" class="btn btn-primary bi bi-list-task" onclick="showUserAnnotations(${index})"></button>
               </div>
             </div>
           </td>`;
@@ -369,6 +369,7 @@ function addUserAnnotations() {
   for (let i = 0; i < rawAnnotations.length; i++) {
     annotations.push(rawAnnotations[i].value);
   }
+  console.log(annotations);
   let comment = $("#userComment").val();
   $.ajax({
     url: localhost + `/v1/users/${id}`,
@@ -384,9 +385,6 @@ function addUserAnnotations() {
     },
     success: function (res) {
       location.reload();
-    },
-    error: function (res) {
-      alert("Errore durante l'aggiunta delle annotazioni");
     },
   });
 }
@@ -435,6 +433,7 @@ function addRentalAnnotations() {
     annotations.push(rawAnnotations[i].value);
   }
   let comment = $("#rentalComment").val();
+  console.log(annotations);
   $.ajax({
     url: localhost + `/v1/rentals/${id}`,
     type: "PATCH",
@@ -449,9 +448,6 @@ function addRentalAnnotations() {
     },
     success: function (res) {
       location.reload();
-    },
-    error: function (res) {
-      alert("Errore durante l'aggiunta delle annotazioni");
     },
   });
 }
@@ -961,12 +957,12 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                       <td class="RentalData actionBar">
                         <div id="rental${index}Actions">
                           <div class="modalActions">
-                            <button class="btn btn-primary bi bi-caret-down" id="saveRentalInfos${index}Button" onclick="editRowRental(${index})"></button>
-                            <button class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editRental(${index})"></button>
-                            <button class="btn btn-primary bi bi-receipt-cutoff" id="rentalBill${index}" onclick="getRentalBill(${index})"></button>
-                            <button class="btn btn-primary bi bi-card-text" id="rentalAddNotes${index}" onclick="addRentalAnnotationsPopUp(${index})"></button>
-                            <button class="btn btn-primary bi bi-list-task" id="rentalGetNotes${index}" onclick="showRentalAnnotations(${index})"></button>
-                            <button class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeRental(${index})"></button>
+                            <button title="Calcola" class="btn btn-primary bi bi-caret-down" id="saveRentalInfos${index}Button" onclick="editRowRental(${index})"></button>
+                            <button title="Edit" class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editRental(${index})"></button>
+                            <button title="Fattura" class="btn btn-primary bi bi-receipt-cutoff" id="rentalBill${index}" onclick="getRentalBill(${index})"></button>
+                            <button title="Aggiungi Note" class="btn btn-primary bi bi-card-text" id="rentalAddNotes${index}" onclick="addRentalAnnotationsPopUp(${index})"></button>
+                            <button title="Mostra Note" class="btn btn-primary bi bi-list-task" id="rentalGetNotes${index}" onclick="showRentalAnnotations(${index})"></button>
+                            <button title="Cancella" class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeRental(${index})"></button>
                           </div>
                         </div>
                     </td>`;
@@ -1044,8 +1040,8 @@ function createNewRentalFromRow(userId, items, itemId) {
     </td>
     <td class="RentalData">
       <div id="rentalInputActions">
-        <button class="btn btn-primary bi bi-caret-down" id="saveRentalInfosInputButton" onclick="editRowRental()"></button>
-        <button class="btn btn-primary bi bi-cloud-arrow-up" id="createRentalInputButton" onclick="postRentalFromRow()"></button>
+        <button title="Calcola" class="btn btn-primary bi bi-caret-down" id="saveRentalInfosInputButton" onclick="editRowRental()"></button>
+        <button title="Aggiungi" class="btn btn-primary bi bi-cloud-arrow-up" id="createRentalInputButton" onclick="postRentalFromRow()"></button>
       </div>
     </td>`;
   return tr;
@@ -1341,13 +1337,13 @@ function searchItems() {
                       <td class="RentalData actionBar">
                         <div id="rental${index}Actions">
                           <div class="modalActions">
-                            <button class="btn btn-primary bi bi-bag-check" id="saveRentalInfos${index}Button" onclick="showItemRentals(${index})"></button>
-                            <button class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editItem(${index})"></button>
-                            <button class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeItem(${index})"></button>
+                            <button title="Mostra Noleggi" class="btn btn-primary bi bi-bag-check" id="saveRentalInfos${index}Button" onclick="showItemRentals(${index})"></button>
+                            <button title="Edit" class="btn btn-primary bi bi-pencil" id="createRental${index}Button" onclick="editItem(${index})"></button>
+                            <button title="Rimuovi" class="btn btn-primary bi bi-x" id="rentalRemove${index}" onclick="removeItem(${index})"></button>
                           </div>
                           <div class="modalActions">
-                            <button class="btn btn-primary bi bi-calendar-date" id="changeDatesRangeDiscount${index}Button" onclick="showDatesRangeDiscountModal(${index})"></button>
-                            <button class="btn btn-primary bi bi-calendar-week" id="changeWeekDayDiscount${index}Button" onclick="showWeekDayDiscountModal(${index})"></button>
+                            <button title="Aggiungi Sconti Periodo" class="btn btn-primary bi bi-calendar-date" id="changeDatesRangeDiscount${index}Button" onclick="showDatesRangeDiscountModal(${index})"></button>
+                            <button title="Aggiungi Sconti Settimanali" class="btn btn-primary bi bi-calendar-week" id="changeWeekDayDiscount${index}Button" onclick="showWeekDayDiscountModal(${index})"></button>
                           </div>
                         </div>
                     </td>`;
