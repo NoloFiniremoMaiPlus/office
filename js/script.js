@@ -465,8 +465,8 @@ function showRentalAnnotations(index) {
     },
     success: function (res) {
       annotation = res.annotation;
-      notes = annotation.quick || [];
-      comment = annotation.text;
+      notes = annotation?.quick || [];
+      comment = annotation?.text || "";
       $("#commenti").empty().text(comment);
       $("#features").empty();
       for (let note of notes) {
