@@ -1435,6 +1435,9 @@ function removeItem(index) {
     url: localhost + "/v1/rentals/",
     type: "GET",
     data: { item: itemId },
+    headers: {
+      Authorization: "Bearer " + getToken(),
+    },
     success: function (data) {
       if (data.results.length == 0) {
         $.ajax({
