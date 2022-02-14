@@ -450,6 +450,9 @@ function addRentalAnnotations() {
     success: function (res) {
       location.reload();
     },
+    error: function (res) {
+      console.log(res);
+    },
   });
 }
 
@@ -801,7 +804,6 @@ function changeDates() {
       }
       $(`#rentalInputStartDate`).datepicker({
         dateFormat: "dd/mm/yy",
-        //TODO: se devo permetterli nel passato commento
         minDate: today,
         beforeShowDay: function (date) {
           let string = jQuery.datepicker.formatDate("yy-mm-dd", date);
@@ -810,7 +812,6 @@ function changeDates() {
       });
       $(`#rentalInputEndDate`).datepicker({
         dateFormat: "dd/mm/yy",
-        //TODO: se devo permetterli nel passato commento
         minDate: tomorrow,
         beforeShowDay: function (date) {
           let string = jQuery.datepicker.formatDate("yy-mm-dd", date);
@@ -892,6 +893,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                 data: filters,
                 success: function (res) {
                   rentals = res.results;
+                  console.log(rentals);
                   for (let r of rentals) {
                     let rentalId = r.id;
                     let rentalUser = r.user != null ? r.user.id : "";
@@ -906,7 +908,7 @@ function showRentals(fromUser, userId, fromItem, itemId) {
                     let loyalties = Number(r.loyalty.toFixed(2));
                     let total = Number(r.total).toFixed(2);
                     let discount = Number(
-                      (baseCost - total - loyalties + surcharge).toFixed(2)
+                      (baseCost - total + surcharge).toFixed(2)
                     );
                     let tr = document.createElement("tr");
                     tr.className = `${state}Row`;
@@ -1480,7 +1482,6 @@ function removeItem(index) {
 
 function showDatesRangeDiscountModal(index) {
   $("#ItemsModal").modal("hide");
-  $("#DatesRangeDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1490,6 +1491,7 @@ function showDatesRangeDiscountModal(index) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
+      $("#DatesRangeDiscountModal").modal("show");
       html = "";
       discounts = data.discountsDate;
       for (discount of discounts) {
@@ -1522,7 +1524,6 @@ function showDatesRangeDiscountModal(index) {
 
 function showWeekDayDiscountModal(index) {
   $("#ItemsModal").modal("hide");
-  $("#WeekDayDiscountModal").modal("show");
   let itemId = $("#item" + index + "Id").val();
   currentItemId = itemId;
   $.ajax({
@@ -1532,6 +1533,7 @@ function showWeekDayDiscountModal(index) {
       Authorization: "Bearer " + getToken(),
     },
     success: function (data) {
+      $("#WeekDayDiscountModal").modal("show");
       html = "";
       discounts = data.discountsWeekday;
       for (discount of discounts) {
@@ -1584,6 +1586,11 @@ function addRangeDiscount() {
         success: function (data) {
           $("#DatesRangeDiscountModal").modal("hide");
           location.reload();
+        },
+        error: function (err) {
+          alert(
+            "Errore nell'inserimento dello sconto, ricontrolla le date inserite"
+          );
         },
       });
     },
